@@ -781,41 +781,40 @@
     ></WorldWideTelescope>
     <div>
       <div id="left-buttons-wrapper" :class="[!showGuidedContent ?'budge' : '']">
-        <div id='geocoding-row' class="d-flex align-center ga-1">
-          <icon-button
-            v-if="getMyLocation"
-            class="geolocation-button"
-            id="my-location"
-            fa-icon="location-crosshairs"
-            :color="myLocationColor"
-            :focus-color="myLocationColor"
-            :box-shadow="false"
-            :tooltip-text="myLocationToolTip"
-            :show-tooltip="!mobile"
-            @update:modelValue="(value: boolean) => {
-              if(value) {
-                ($refs.geolocation as any).getLocation();
-                showMyLocationDialog = true;
-                learnerPath = 'Location';
-              }
-              else {
-                console.log('geolocation button pressed = false');
-              }
+        <location-search
+          class="location-search-overwwt"
+          v-model="searchOpen"
+          :search-provider="geocodingInfoForSearch"
+          :accentColor="accentColor"
+          @set-location="setLocationFromSearchFeature"
+          @error="searchErrorMessage = $event"
+          small
+          buttonSize="lg"
+        />
 
-            }"
-            faSize="lg"
-          ></icon-button>
-          <location-search
-            class="location-search-overwwt"
-            v-model="searchOpen"
-            :search-provider="geocodingInfoForSearch"
-            :accentColor="accentColor"
-            @set-location="setLocationFromSearchFeature"
-            @error="searchErrorMessage = $event"
-            small
-            buttonSize="lg"
-          />
-        </div>
+        <icon-button
+          v-if="getMyLocation"
+          class="geolocation-button"
+          id="my-location"
+          fa-icon="location-crosshairs"
+          :color="myLocationColor"
+          :focus-color="myLocationColor"
+          :box-shadow="false"
+          :tooltip-text="myLocationToolTip"
+          :show-tooltip="!mobile"
+          @update:modelValue="(value: boolean) => {
+            if(value) {
+              ($refs.geolocation as any).getLocation();
+              showMyLocationDialog = true;
+              learnerPath = 'Location';
+            }
+            else {
+              console.log('geolocation button pressed = false');
+            }
+
+          }"
+          faSize="lg"
+        ></icon-button>
         <div id="location-progress" :class="[!showGuidedContent ?'budge' : '']">
           <geolocation-button
             :color="accentColor"
@@ -864,6 +863,18 @@
           ></geolocation-button>
         </div>
 
+        <icon-button
+          id="share"
+          fa-icon="share-nodes"
+          :color="accentColor"
+          :focus-color="accentColor"
+          :box-shadow="false"
+          tooltip-text="Share view of this location"
+          :show-tooltip="!mobile"
+          @activate="copyShareURL"
+          faSize="lg"
+        ></icon-button>
+
         <div
           id="controls"
           class="control-icon-wrapper"
@@ -877,7 +888,7 @@
               @click="showControls = !showControls"
               @keyup.enter="showControls = !showControls"
               tabindex="0"
-            /> 
+            />
           </div>
 
           <div v-if="showControls" id="control-checkboxes">
@@ -888,14 +899,14 @@
               @change="centerSun()"
               label="Center Sun"
               :disabled="sunCenteredTracking"
-              hide-details 
+              hide-details
             />
             <v-checkbox
               :color="accentColor"
               v-model="showAltAzGrid"
               @keyup.enter="showAltAzGrid = !showAltAzGrid"
               label="Sky Grid"
-              hide-details 
+              hide-details
             />
             <v-checkbox
               :color="accentColor"
@@ -963,18 +974,6 @@
             />
           </div>
       </div>
-
-        <icon-button
-          id="share"
-          fa-icon="share-nodes"
-          :color="accentColor"
-          :focus-color="accentColor"
-          :box-shadow="false"
-          tooltip-text="Share view of this location"
-          :show-tooltip="!mobile"
-          @activate="copyShareURL"
-          faSize="lg"
-        ></icon-button>
     </div>
       <!-- <div id="mobile-zoom-control"> -->
         <!-- {{ Math.round(Math.pow(10, userZoom)*100)/100 }} -->
@@ -1363,7 +1362,7 @@
       <icon-button
         id="eclipse-details-button"
         md-icon="sun-clock"
-        :md-size="showNewMobileUI ? '16' : '24'"
+        :md-size="showNewMobileUI ? '20' : '24'"
         :color="accentColor"
         :focus-color="accentColor"
         tooltip-text="View eclipse timing details"
@@ -1376,7 +1375,7 @@
         v-if="withinForecastRange"
         v-model="showForecastSheet"
         md-icon="mdi-cloud-clock"
-        :md-size="showNewMobileUI ? '16' : '24'"
+        :md-size="showNewMobileUI ? '20' : '24'"
         :color="accentColor"
         :focus-color="accentColor"
         :tooltip-text="showForecastSheet ? null : 'August 12 Weather Forecast'"
@@ -1431,7 +1430,7 @@
                 :tooltip-text="playbackRate < 0 ? 'Play time forwards' : 'Play time backwards'"
                 tooltip-location="top"
                 tooltip-offset="5px"
-                mdSize="18"
+                mdSize="22"
                 :show-tooltip="!mobile"
               ></icon-button>
               <icon-button
@@ -1445,7 +1444,7 @@
                 tooltip-text="Play/Pause"
                 tooltip-location="top"
                 tooltip-offset="5px"
-                faSize="1x"
+                faSize="lg"
                 :show-tooltip="!mobile"
               ></icon-button>
               <icon-button
@@ -1460,7 +1459,7 @@
                 :tooltip-text="'Slower'"
                 tooltip-location="top"
                 tooltip-offset="5px"
-                faSize="1x"
+                faSize="lg"
                 :show-tooltip="!mobile"
               ></icon-button>
               <icon-button
@@ -1475,7 +1474,7 @@
                 :tooltip-text="'Faster'"
                 tooltip-location="top"
                 tooltip-offset="5px"
-                faSize="1x"
+                faSize="lg"
                 :show-tooltip="!mobile"
               ></icon-button>
               <icon-button
@@ -1494,7 +1493,7 @@
                 tooltip-text="Reset"
                 tooltip-location="top"
                 tooltip-offset="5px"
-                faSize="1x"
+                faSize="lg"
                 :show-tooltip="!mobile"
               ></icon-button>
                     
@@ -1521,7 +1520,7 @@
                     tooltip-text="Speed Controls"
                     tooltip-location="top"
                     tooltip-offset="5px"
-                    faSize="1x"
+                    faSize="lg"
                     :show-tooltip="!mobile"
                     v-bind="props"
                   ></icon-button>
@@ -1534,17 +1533,11 @@
                         forceRate = false;
                         playbackRate = value;
                       }"
-                      :paused="!playing"
-                      @paused="playing = !$event"
                       :max-power="3"
                       :max="Math.log10(1000) + 1"
                       :color="accentColor"
                       :inline="false"
-                      show-close-button
-                      @close="() => {
-                        playbackVisible = false;
-                      }"
-                    /> 
+                    />
               </v-dialog>
       
 
@@ -1560,7 +1553,7 @@
                     tooltip-text="Time Controls"
                     tooltip-location="top"
                     tooltip-offset="5px"
-                    faSize="1x"
+                    faSize="lg"
                     :show-tooltip="!mobile"
                   ></icon-button>
 
@@ -1572,17 +1565,11 @@
                         forceRate = false;
                         playbackRate = value;
                       }"
-                      :paused="!playing"
-                      @paused="playing = !$event"
                       :max-power="3"
                       :max="Math.log10(1000) + 1"
                       :color="accentColor"
                       :inline="true"
-                      inline-button
-                      @close="() => {
-                        playbackVisible = false;
-                      }"
-                    /> 
+                    />
 
                 </div>
             </div>
@@ -2213,6 +2200,8 @@ export default defineComponent({
       
       accentColor: "#eac402",
       moonColor: "#CFD8DC",
+      normalBorderRadius: "10px",
+      tightBorderRadius: "5px",
       guidedContentHeight: "300px",
       showGuidedContent: true,
       topContainerCustomHeight: null as number | null,
@@ -2649,6 +2638,8 @@ export default defineComponent({
         '--app-content-height': this.showInfoSheet ? '100%' : '100%',
         '--top-content-height': this.showGuidedContent? this.guidedContentHeight : this.guidedContentHeight,
         '--moon-color': this.moonColor,
+        '--normal-border-radius': this.normalBorderRadius,
+        '--tight-border-radius': this.tightBorderRadius,
       };
     },
     topContainerStyle() {
@@ -4702,7 +4693,7 @@ export default defineComponent({
 }
 
 :root {
-  --default-font-size: clamp(0.7rem, min(1.7vh, 1.7vw), 1.1rem);
+  --default-font-size: clamp(0.8rem, min(1.7vh, 1.7vw), 1rem);
   --default-line-height: clamp(1rem, min(2.2vh, 2.2vw), 1.6rem);
   --time-content-max-width: 700px;
 }
@@ -4795,9 +4786,6 @@ body {
     user-select: none;
   }
 
-  #my-location-button {
-    border-width: 2px;
-  }
 
   .location-search-overwwt {
     z-index: 600;
@@ -4820,7 +4808,7 @@ body {
     font-weight: bold;
     color: #888888;
     text-align: center;
-    border-radius: 10px;
+    border-radius: var(--normal-border-radius);
 
     @media (max-width: 600px) {
       width: 35%;
@@ -4959,7 +4947,7 @@ body {
   left: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   width: fit-content;
   align-items: flex-start;
   
@@ -4986,19 +4974,7 @@ body {
     }
   }
   
-  .icon-wrapper {
-    padding-inline: 0.5em;
-    padding-block: 0.6em;
-  }
-
-  .icon-wrapper {
-    padding-inline: calc(0.3 * var(--default-line-height));
-    padding-block: calc(0.4 * var(--default-line-height));
-  }
-  
-  .icon-wrapper:not(#my-location-button) {
-    border: 2px solid var(--accent-color);
-  }
+  // Sizing/border now come from the unified .icon-wrapper rule.
 }
 
 
@@ -5012,12 +4988,6 @@ body {
 
 }
 
-#geocoding-row {
-  @media (max-width: 599px) {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-  }
-}
 
 .url-notification {
   margin-top: 45vh;
@@ -5108,11 +5078,7 @@ body {
     align-items: stretch;
   }
 
-  div.icon-wrapper {
-    padding: 5px 5px;
-    min-width: 30px;
-  }
-  
+  // Sizing now comes from the unified .icon-wrapper rule.
 }
 
 #left-buttons-wrapper {
@@ -5125,7 +5091,7 @@ body {
   background: black;
   padding-block: 0.5em;
   padding-right: 0.5em;
-  border-radius: 5px;
+  border-radius: var(--tight-border-radius);
   border: solid 1px var(--accent-color);
   display: flex;
   flex-direction: column;
@@ -5349,14 +5315,8 @@ body {
     bottom: 3rem;
   }
 
-  @media (min-width: 700px) {   
+  @media (min-width: 700px) {
     bottom: 6rem;
-  }
-
-  .icon-wrapper {
-    padding-inline: calc(0.3 * var(--default-line-height));
-    padding-block: calc(0.4 * var(--default-line-height));
-    border: 2px solid var(--accent-color);
   }
 }
 
@@ -5774,6 +5734,16 @@ video, #info-video {
     // inherit that sizing on its own.
     font-size: calc(1.3 * var(--default-font-size));
     font-weight: bold;
+
+    // This button shows "Map & Weather" text, not just an icon, so it
+    // can't use the unified fixed-circle icon-button size — it needs to
+    // stay a content-sized pill.
+    #show-guided-content-button {
+      width: fit-content;
+      height: fit-content;
+      padding: 6px 12px;
+      border-radius: var(--normal-border-radius);
+    }
   }
 
 #guided-content-container {
@@ -6100,6 +6070,7 @@ video, #info-video {
         padding-block: 4px;
         // be as large as you can but shrink if needed
         width: 100%;
+        height: auto;
         min-width: 0;
         flex-shrink: 1;
 
@@ -6190,27 +6161,20 @@ video, #info-video {
     }
 
     #my-location-overmap-button {
-      height: fit-content;
       position: absolute;
       z-index: 550;
       right: 1.25em;
       bottom: 1rem;
-      
     }
-    
+
     #my-location-overmap-budge-button {
-      height: fit-content;
       position: absolute;
       z-index: 550;
       right: 4.5em;
       bottom: 1rem;
-      
     }
-    
 
-    
     #eclipse-details-overmap-button {
-      height: fit-content;
       position: absolute;
       z-index: 600;
       bottom: 1rem;
@@ -6318,7 +6282,7 @@ video, #info-video {
   border: 2px solid white;
   background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
-  border-radius: 24px;
+  border-radius: var(--normal-border-radius);
   
   
   
@@ -6435,7 +6399,7 @@ video, #info-video {
   transform: translateX(-50%) translateY(-50%);
   height: fit-content;
   // outline: 5px solid var(--accent-color);
-  border-radius: 1em;
+  border-radius: var(--normal-border-radius);
 
   @media (max-width: 700px) {
     width: 95%;
@@ -6519,13 +6483,6 @@ video, #info-video {
   @media (max-width: 370px) {
     justify-content: center;
   }
-
-  .icon-wrapper {
-    padding-inline: calc(0.3 * var(--default-line-height));
-    padding-block: calc(0.4 * var(--default-line-height));
-    border: 2px solid var(--accent-color);
-  }
-
 }
 
 #enclosing-playback-container.desktop-playback-control {
@@ -6539,27 +6496,13 @@ video, #info-video {
   padding-right: 1rem;
 }
 
-#enclosing-playback-container > #playback-play-pause-button {
-  pointer-events: auto!important;
-}
-
 #inline-speed-control {
-  display: flex; 
-  flex-grow:1; 
-  align-items: flex-end; 
-  position: relative; 
+  display: flex;
+  flex-grow:1;
+  align-items: flex-end;
+  position: relative;
   gap: 5px;
-  
-  // when the screen is small enough we want to hide the buttons in inline mode
-  @media (min-width: 369px) {
-    #enclosing-playback-container > #playback-play-pause-button {
-      display: none;
-    }
-    
-    #enclosing-playback-container > #playback-close-button {
-      display: none;
-    }
-  }
+
   // when small enough we want to cover the controls
   @media (max-width: 370px) {
     // position: absolute;
@@ -6639,8 +6582,8 @@ video, #info-video {
     pointer-events: auto;
     background: black;
     color: white;
-    border: 1px solid var(--accent-color);
-    border-radius: 5px;
+    border: 2px solid var(--accent-color);
+    border-radius: var(--tight-border-radius);
     padding: 0.5rem;
     font-size: calc(0.9 * var(--default-font-size));
     text-align: center;
@@ -6749,10 +6692,15 @@ video, #info-video {
     right: 0.5rem;
   }
   
+  // Deliberately excluded from the unified icon-button size — this one
+  // stays small.
   .icon-wrapper {
+    width: auto;
+    height: auto;
     margin: 0;
     padding: 0.15em;
     border: none;
+    border-radius: 4px;
     min-width: 0;
   }
 }
@@ -6786,13 +6734,6 @@ a {
     color: #7996DA; // lighter variant of CosmicDS logo blue
     pointer-events: auto;
   }
-
-#inline-open-icon {
-  background-color: var(--accent-color);
-  border-radius: 50%;
-  border: 1.5px solid var(--accent-color);
-}
-
 
 #mobile-zoom-control {
   position: absolute;
@@ -6837,71 +6778,14 @@ a {
 }
 
 .icon-wrapper {
-  width: fit-content;
+  box-sizing: border-box;
+  width: 35px;
+  height: 37px;
+  padding: 0;
+  border-radius: var(--normal-border-radius);
+  border: 2px solid var(--color);
 }
 
-#forward-geocoding-container {
-  position: relative;
-  width: fit-content;
-  color: var(--accent-color);
-  background-color: black;
-  border: 2px solid var(--accent-color);
-  border-radius: 20px;
-  padding: var(--fg-container-padding);
-
-  .v-text-field {
-    min-width: 150px;
-    width: min(200px, 20vw);
-  }
-  
-  .forward-geocoding-input.geocode-success label {
-    color: var(--accent-color);
-    opacity: 1;
-  }
-
-  #forward-geocoding-input-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    gap: 10px;
-    align-items: center;
-  }
-
-  #geocoding-search-icon {
-    padding-inline: calc(0.3 * var(--default-line-height));
-    padding-block: calc(0.4 * var(--default-line-height));
-  }
-
-  #geocoding-search-icon:hover, #geocoding-close-icon:hover {
-    cursor: pointer;
-  }
-
-  // For some reason setting width: 100% makes the search results 2px too small
-  // It's probably some Vuetify styling thing
-  // Maybe there's a better workaround, but this gets the job done for now
-  #forward-geocoding-results {
-    position: absolute;
-    top: 42px;
-    left: -1px;
-    width: calc(100% + 2px);
-    background: black;
-    border: 1px solid var(--accent-color);
-    border-top: 0px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding: 0px 10px;
-
-    .forward-geocoding-result {
-      border-top: 1px solid var(--accent-color);
-      font-size: 12pt;
-      pointer-events: auto;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-  }
-}
 
 
 .rating-root {
@@ -6914,7 +6798,7 @@ a {
   // transform: translateX(-50%);
   gap: 0 !important;
   border: solid 1px #EFEFEF !important;
-  border-radius: 10px !important;
+  border-radius: var(--tight-border-radius) !important;
   background-color: #222222 !important;
   opacity: 0.95 !important;
   z-index: 20000 !important;
