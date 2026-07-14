@@ -5737,22 +5737,14 @@ video, #info-video {
   max-width: 100%;
 }
 
-// Only ever shown while the top content box is hidden (see v-show above),
-// to reopen it.
 #closed-top-container {
     position: absolute;
     left: 0.5rem;
     z-index: 500;
     top: calc(var(--default-font-size) + 1px);
-    // Match the open-state title's size (1.3em over --default-font-size);
-    // this button sits outside #guided-content-container so it doesn't
-    // inherit that sizing on its own.
-    font-size: calc(1.3 * var(--default-font-size));
+    font-size: calc(1.2 * var(--default-font-size));
     font-weight: bold;
 
-    // This button shows "Map & Weather" text, not just an icon, so it
-    // can't use the unified fixed-circle icon-button size — it needs to
-    // stay a content-sized pill.
     #show-guided-content-button {
       width: fit-content;
       height: fit-content;
@@ -5763,12 +5755,6 @@ video, #info-video {
 
 #guided-content-container {
   --top-content-max-height: max(30vmin, 35vh);
-  // fit-content (rather than a fixed px floor) means the default,
-  // un-resized height always accommodates the title/instructions/buttons
-  // without needing to scroll — min-height wins over max-height when they
-  // conflict, so this only grows past --top-content-max-height for
-  // content that genuinely needs more room. Scrolling only kicks in once
-  // the user explicitly drags the container shorter than this.
   --top-content-min-height: fit-content;
   z-index: 400;
 
@@ -5802,12 +5788,6 @@ video, #info-video {
   
   line-height: var(--default-line-height);
   .thin-scrollbar();
-  // Content is now fully contained by #non-map-container's own internal
-  // scroll and #map-column's sizing, so this outer container practically
-  // never overflows — scrollbar-gutter: stable was permanently reserving
-  // space on the right for a scrollbar that's essentially never shown,
-  // which looked like doubled right-side padding. Drop the reservation
-  // here; overflow-y: auto above still lets it scroll in a pinch.
   scrollbar-gutter: auto;
 
   transition: height 0.5s ease-in-out;
@@ -5817,9 +5797,6 @@ video, #info-video {
   
   @media (max-width: 600px) {
     flex-direction: column;
-    // This gap sits directly above/below #mobile-map-height-resize-handle
-    // (the only other flex child on mobile), so it reads as dead space
-    // around the handle rather than breathing room between sections.
     gap: 0.25rem;
   }
   
@@ -5841,10 +5818,6 @@ video, #info-video {
     flex-basis: 100%;
     min-width: 0;
     @media (max-width: 600px) {
-      // Always its natural content height on mobile — never grows, never
-      // shrinks — so the title/instructions/buttons are never forced to
-      // scroll by default; #map-column (below) is the one that gives up
-      // height to make room for it.
       flex: 0 0 auto;
     }
     @media (min-width: 960px) {
@@ -5861,9 +5834,6 @@ video, #info-video {
     align-items: center;
 
     @media (max-width: 600px) {
-      // Fills whatever vertical space #non-map-container's content
-      // doesn't need, instead of being pinned to a fixed aspect ratio
-      // that could force it (and the box as a whole) taller than needed.
       flex: 1 1 auto;
       min-height: 120px;
     }
@@ -5933,12 +5903,6 @@ video, #info-video {
   #non-map-container { // Keep content away from the x to close
     height: 100%;
     @media (max-width: 600px) {
-      // On mobile, height is this element's flex *main* axis (the layout
-      // is a column). flex-basis: auto (set below) defers to the height
-      // property when present, so leaving height: 100% here made this
-      // element claim the container's entire height, leaving nothing for
-      // #map-column. Content-based height lets it size to its own
-      // natural content instead.
       height: auto;
     }
     --padding-left: 0.5rem;
@@ -5950,16 +5914,7 @@ video, #info-video {
     
     display: flex;
     flex-direction: column;
-    // Center the title/instructions/buttons group when it doesn't fill
-    // the (possibly resized-tall) container; #instructions-row still
-    // shrinks (and scrolls internally) rather than overflowing if the
-    // container is too short for everything to fit at natural size.
     justify-content: center;
-    // "safe" falls back to start-alignment once content overflows, so the
-    // top of an overflowing group stays reachable by scrolling instead of
-    // being clipped off — plain "center" leaves start-side overflow
-    // unreachable even with a scrollbar. (Ignored by browsers that don't
-    // support safe/unsafe alignment, which keep the plain "center" above.)
     justify-content: safe center;
     align-items: stretch;
     gap: 0.5em;
@@ -5971,7 +5926,6 @@ video, #info-video {
     .non-map-row {
       margin: 0;
       padding: 0;
-      // Title and button rows stay at their natural content height.
       flex: 0 0 auto;
     }
 
@@ -5995,10 +5949,6 @@ video, #info-video {
 
     #hide-guided-content-button {
       flex: 0 0 auto;
-      // The icon-button's border prop is a no-op in the installed
-      // @cosmicds/vue-toolkit version — its .icon-wrapper always renders
-      // a border — so it has to be overridden directly here to match the
-      // borderless chevron used for the controls box.
       border: none;
     }
   }
@@ -6013,9 +5963,6 @@ video, #info-video {
     
     // .v-row.non-map-row#instructions-row
   #instructions-row {
-    // Size to content (don't force-grow to fill leftover space — that's
-    // what let the whole group get vertically centered above), but still
-    // allow shrinking so it scrolls internally instead of overflowing.
     flex: 0 1 auto;
     min-height: 0;
     display: flex;
@@ -6141,10 +6088,6 @@ video, #info-video {
   width: 100%;
   min-height: 0;
   // outline: 1px solid red;
-  // (No mobile aspect-ratio here anymore — it forced a minimum height via
-  // the flex "automatic minimum size" mechanism, which is what was
-  // squeezing #non-map-container. #map-column's height on mobile is now
-  // driven purely by the flex-basis/min-height set above instead.)
 
   #map-container {
     height: 100%;
