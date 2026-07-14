@@ -1497,11 +1497,11 @@
                 :show-tooltip="!mobile"
               ></icon-button>
                     
-              <v-dialog 
-                v-if="!xSmallSize" 
-                v-model="playbackVisible" 
+              <v-dialog
+                v-if="!xSmallSize"
+                v-model="playbackVisible"
                 :scrim="false"
-                location="top"
+                location="top end"
                 offset="40"
                 location-strategy="connected"
                 persistent
@@ -6475,21 +6475,32 @@ video, #info-video {
   align-items: flex-end;
   gap: 5px;
   margin-left: 10px;
-  
+
   @media (orientation: landscape) {
     margin-left: 3rem;
   }
-  
+
   @media (max-width: 370px) {
     justify-content: center;
+  }
+
+  // Narrower buttons on mobile so there's still room for the inline
+  // speed-control slider (#inline-speed-control) alongside them when
+  // it's open, instead of everything competing for space at full width.
+  @media (max-width: 600px) {
+    .icon-wrapper {
+      width: 30px;
+      height: 34px;
+    }
   }
 }
 
 #enclosing-playback-container.desktop-playback-control {
   --tick-font-size: 12px;
   margin-bottom: calc(2.5rem + 5px);
+  margin-left: 5px;
   padding-right: 1rem;
-  
+  max-width: 235px;
 }
 
 #enclosing-playback-container.inset.mobile-playback-control {
