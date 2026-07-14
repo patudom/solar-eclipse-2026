@@ -1096,6 +1096,7 @@
       opacity="1"
       :scrim="false"
       :close-on-content-click="true"
+      :style="cssVars"
       >
       <div id="instruction-overlay">
         <div id="overlay-close">
@@ -1419,21 +1420,6 @@
           <div style="position: relative">
             <div id="speed-control">
               <icon-button
-                id="reverse-speed"
-                :md-icon="playbackRate < 0 ? 'mdi-step-forward-2' : 'mdi-step-backward-2'"
-                @activate="() => {
-                      reversePlaybackRate();
-                      // playing = true;
-                    }"
-                :color="accentColor"
-                :focus-color="accentColor"
-                :tooltip-text="playbackRate < 0 ? 'Play time forwards' : 'Play time backwards'"
-                tooltip-location="top"
-                tooltip-offset="5px"
-                mdSize="22"
-                :show-tooltip="!mobile"
-              ></icon-button>
-              <icon-button
                 id="play-pause-icon"
                 :fa-icon="!(playing) ? 'play' : 'pause'"
                 @activate="() => {
@@ -1478,6 +1464,22 @@
                 :show-tooltip="!mobile"
               ></icon-button>
               <icon-button
+                v-if="!xSmallSize"
+                id="reverse-speed"
+                :md-icon="playbackRate < 0 ? 'mdi-step-forward-2' : 'mdi-step-backward-2'"
+                @activate="() => {
+                      reversePlaybackRate();
+                      // playing = true;
+                    }"
+                :color="accentColor"
+                :focus-color="accentColor"
+                :tooltip-text="playbackRate < 0 ? 'Play time forwards' : 'Play time backwards'"
+                tooltip-location="top"
+                tooltip-offset="5px"
+                mdSize="22"
+                :show-tooltip="!mobile"
+              ></icon-button>
+              <icon-button
                 id="reset"
                 :fa-icon="'house'"
                 @activate="() => {
@@ -1496,7 +1498,7 @@
                 faSize="lg"
                 :show-tooltip="!mobile"
               ></icon-button>
-                    
+
               <v-dialog
                 v-if="!xSmallSize"
                 v-model="playbackVisible"
@@ -5705,8 +5707,22 @@ video, #info-video {
     }
   }
 
-  .v-slider-thumb__label::before {
-    color: var(--accent-color);
+  // Vuetify's pointer/wedge is a real child element (.v-slider-thumb__label-wedge),
+  // not a ::before pseudo-element, and it just inherits the label's background.
+  // Give it the accent-color border by stacking a smaller dark triangle over a
+  // solid accent-color one, mimicking a mitered continuation of the label's border.
+  .v-slider-thumb__label-wedge {
+    background: var(--accent-color);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      clip-path: inherit;
+      background: rgba(0, 0, 0, 0.5);
+      transform: scale(0.7);
+      transform-origin: top center;
+    }
   }
 }
 
@@ -5714,8 +5730,7 @@ video, #info-video {
   width: 100% !important;
   margin-left: 5px;
   margin-right: 0;
-  position: relative
-  
+  position: relative;
 }
 
 .v-container {
@@ -6282,7 +6297,7 @@ video, #info-video {
   border: 2px solid white;
   background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(5px);
-  border-radius: var(--normal-border-radius);
+  border-radius: var(--tight-border-radius);
   
   
   
@@ -6484,14 +6499,12 @@ video, #info-video {
     justify-content: center;
   }
 
-  // Narrower buttons on mobile so there's still room for the inline
-  // speed-control slider (#inline-speed-control) alongside them when
-  // it's open, instead of everything competing for space at full width.
   @media (max-width: 600px) {
     .icon-wrapper {
       width: 30px;
       height: 34px;
     }
+    margin-bottom: 10px;
   }
 }
 

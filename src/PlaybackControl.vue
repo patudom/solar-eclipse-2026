@@ -248,7 +248,7 @@ export default defineComponent({
   padding-block-start: 0.25rem;
   padding-block-end: 0.75rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--color);
+  border: 2px solid var(--color);
   // min-width: 200px;
   max-width: 510px;
   background-color: #272727;
