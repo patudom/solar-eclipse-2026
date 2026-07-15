@@ -1031,25 +1031,20 @@
         <div class="inst-quad top-left">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
-            Set location + more
+            Set location<br> + more
           </div>
         </div>
         <div class="inst-quad top-right">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
-            Where, when + how much
+            Where, when, <br>+ how much
           </div>
         </div>
         <div class="inst-quad bottom-left">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
-            New! Set time to "Now," or control time yourself!
-          </div>
-        </div>
-        <div class="inst-quad bottom-right">
-          <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
-          <div class="inst-text">
-            Tell me what will happen and when<span v-if="withinForecastRange">, + new! August 12 weather</span>
+            <template v-if="onDayOfEclipse">New! Set time to "Now," or control time yourself!</template>
+            <template v-else>Control time yourself!</template>
           </div>
         </div>
         <!-- <div id="instructions-close-button">
@@ -6159,33 +6154,16 @@ video, #info-video {
   }
   
   div.inst-quad.bottom-left {
-    grid-area: 2 / 1 / 3 / 2;
+    grid-area: 2 / 1 / 3 / 3;
     flex-direction: column-reverse;
+    align-items: center;
     margin-top: auto;
+    text-align: center;
+    .inst-text {
+      justify-content: center;
+    }
     .the-arrow {
       transform: translateY(5px) rotateX(180deg);
-    }
-  }
-  
-  div.inst-quad.bottom-right {
-    grid-area: 2 / 2 / 3 / 3;
-    flex-direction: column-reverse;
-    margin-top: auto;
-    text-align: right;
-    .inst-text {
-      justify-content: flex-end;
-    }
-    .inst-arrow {
-      align-self: end;
-    }
-    .the-arrow {
-      transform: translateY(5px) rotateX(180deg) rotateZ(90deg);
-    } 
-    
-    @media (min-height: 500px) {
-      .the-arrow {
-        transform: translateY(5px) rotateX(180deg) rotateZ(45deg);
-      } 
     }
   }
   
