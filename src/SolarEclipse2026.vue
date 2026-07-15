@@ -331,32 +331,6 @@
     ></div>
   </v-container>
   
-  <v-dialog
-    id="video-container"
-    v-model="showVideoSheet"
-    transition="slide-y-transition"
-    close-on-back
-    fullscreen
-  >
-    <div class="video-wrapper">
-      <font-awesome-icon
-        id="video-close-icon"
-        class="close-icon"
-        icon="times"
-        size="lg"
-        @click="showVideoSheet = false"
-        @keyup.enter="showVideoSheet = false"
-        tabindex="0"
-      ></font-awesome-icon>
-      <video
-        controls
-        id="info-video"
-      >
-        <source src="./assets/video.mp4" type="video/mp4">
-      </video>
-    </div>
-  </v-dialog>
-  
 
     <v-dialog
       scrim="false"
@@ -1295,18 +1269,6 @@
         </v-btn>
       </div>
       
-      <div id="video-icon">
-        <icon-button
-          v-model="showVideoSheet"
-          id="video-icon"
-          fa-icon="video"
-          fa-size="lg"
-          :color="accentColor"
-          tooltip-text="Video guide"
-          tooltip-location="start"
-          :tooltip-offset="smallSize ? 0 : '10px'"
-        ></icon-button>
-      </div>
       <div id="tools">
         <span class="tool-container">
           <div style="position: relative">
@@ -1657,7 +1619,7 @@ interface CloudData {
 
 
 
-type SheetType = "text" | "video" | null;
+type SheetType = "text" | null;
 type LearnerPath = "Location" | "Clouds" | 'CloudDetail' | "Learn";
 type ViewerMode = "Horizon";
 type MoonImageFile = "moon.png" | "moon-dark-gray-overlay.png" | `moon-sky-blue-overlay-${number}.png` | "empty.png";
@@ -2305,12 +2267,6 @@ export default defineComponent({
           this.updateFrontAnnotations(time);
         }
       }, 500);
-      
-      window.addEventListener('keyup', (event: KeyboardEvent) => {
-        if (["Esc", "Escape"].includes(event.key) && this.showVideoSheet) {
-          this.showVideoSheet = false;
-        }
-      });
 
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") {
@@ -2752,19 +2708,6 @@ export default defineComponent({
       return pointInPolygon(point, poly);
     },
 
-
-    showVideoSheet: {
-      get(): boolean {
-        return this.sheet === "video";
-      },
-      set(_value: boolean) {
-        this.selectSheet('video');
-        // if (!value) {
-        //   // const video = document.querySelector("#info-video") as HTMLVideoElement;
-        //   // video.pause();
-        // }
-      }
-    },
 
   },
 
@@ -5175,68 +5118,6 @@ body {
   }
 }
 
-#video-icon {
-  display: none;  // ACTION NEEDED - reenable this when we have a video
-  position: absolute;
-  left: 0.5rem;
-  width: 2.2rem;
-
-  @media (max-width: 699px) {
-    bottom: 3rem;
-  }
-
-  @media (min-width: 700px) {
-    bottom: 6rem;
-  }
-}
-
-.video-wrapper {  
-  display: flex;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-  text-align: center;
-  z-index: 1000;
-}
-
-video, #info-video {
-  margin: auto;
-  height: 85%;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  // aspect-ratio: 9/17;
-  border: 5px solid white;
-}
-
-#video-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  overflow: hidden;
-  padding: 0px;
-  z-index: 1000;
-}
-
-.close-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 15;
-
-  &:hover {
-    cursor: pointer;
-  }
-
-  &:focus {
-    color: white;
-    border: 2px solid white;
-  }
-}
-
 #overlay-close {
   position: absolute;
   top: 2%;
@@ -5395,22 +5276,6 @@ video, #info-video {
 
   .v-card-text {
     height: 40vh;
-  }
-
-  .close-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 15;
-
-    &:hover {
-      cursor: pointer;
-    }
-
-    &:focus {
-      color: white;
-      border: 2px solid white;
-    }
   }
 
   .scrollable {
