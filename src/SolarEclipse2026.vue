@@ -1219,7 +1219,7 @@
      
       <v-dialog
         v-model="showEclipsePredictionSheet"
-        max-width="fit-content"
+        :max-width="xSmallSize ? '95%' : 'fit-content'"
         transition="slide-y-transition"
         id="eclipse-prediction-sheet"
         >
@@ -5343,6 +5343,7 @@ body {
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 1;
   // At least Apple/Google's recommended ~44px minimum touch target —
   // the icon itself is much smaller, but the tap target shouldn't be.
   min-width: 44px;
@@ -5356,6 +5357,14 @@ body {
   // committing to the click — that wait is a common source of taps that
   // "look right" but silently don't register on mobile.
   touch-action: manipulation;
+}
+
+#eclipse-prediction-sheet {
+  @media (max-width: 350px) {
+    .v-card-text {
+      padding-inline: 12px;
+    }
+  }
 }
 
 #body-logos {
