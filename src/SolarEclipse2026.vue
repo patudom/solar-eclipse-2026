@@ -1191,6 +1191,31 @@
           <div v-if="eclipsePredictionText" class="eclipse-status-line">{{ eclipsePredictionText }}</div>
           <div>{{ percentEclipsedText }}</div>
         </div>
+
+        <icon-button
+          id="eclipse-details-button"
+          md-icon="sun-clock"
+          :md-size="showNewMobileUI ? '20' : '24'"
+          :color="accentColor"
+          :focus-color="accentColor"
+          tooltip-text="View eclipse timing details"
+          tooltip-location="start"
+          @activate="() => { showEclipsePredictionSheet = true; }"
+          >
+        </icon-button>
+
+        <icon-button
+          v-if="showNewMobileUI"
+          v-model="showInfoSheet"
+          fa-icon="book-open"
+          fa-size="lg"
+          :color="accentColor"
+          :focus-color="accentColor"
+          :tooltip-text="showInfoSheet ? null : 'More on Eclipses'"
+          :tooltip-location="'left'"
+          :show-tooltip="!mobile"
+          :box-shadow="false"
+        ></icon-button>
       </div>
     </div>
     
@@ -1241,31 +1266,6 @@
           </v-card-text>
         </v-card>
       </v-dialog>
-            
-      <icon-button
-        v-if="showNewMobileUI"
-        v-model="showInfoSheet"
-        fa-icon="book-open"
-        fa-size="lg"
-        :color="accentColor"
-        :focus-color="accentColor"
-        :tooltip-text="showInfoSheet ? null : 'More on Eclipses'"
-        :tooltip-location="'left'"
-        :show-tooltip="!mobile"
-        :box-shadow="false"
-      ></icon-button>
-      
-      <icon-button
-        id="eclipse-details-button"
-        md-icon="sun-clock"
-        :md-size="showNewMobileUI ? '20' : '24'"
-        :color="accentColor"
-        :focus-color="accentColor"
-        tooltip-text="View eclipse timing details"
-        tooltip-location="start"
-        @activate="() => { showEclipsePredictionSheet = true; }"
-        >
-      </icon-button>
 
       <icon-button
         v-if="withinForecastRange"
@@ -6377,6 +6377,7 @@ video, #info-video {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    gap: 5px;
 
     @media (max-width: 250px) {
       padding-top: 3.5em;
@@ -6423,16 +6424,6 @@ video, #info-video {
       white-space: pre-line;
       // Same vertical space as between the location name and this line.
       margin-block: 0.25rem;
-    }
-  }
-
-  .icon-wrapper {
-    @media (max-width: 750px) { //SMALL
-      margin-top: 0.5rem;
-    }
-
-    @media (min-width: 751px) { //LARGE
-      margin-top: 0.7rem;
     }
   }
 
