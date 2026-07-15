@@ -251,40 +251,44 @@
             id="map-container">
 
             <!-- modelValue = false, starts with it closed, use stay-open to keep it open -->
-            <location-search
-              v-model="searchOpen"
-              :class="['location-search-overmap', learnerPath === 'Clouds' ? 'overmap-budge' : '', showNewMobileUI ? '' : 'overmap-low']"
+            <div
+              class="map-search-stack"
+              :class="[learnerPath === 'Clouds' ? 'overmap-budge' : '', showNewMobileUI ? '' : 'overmap-low']"
               v-if="narrow"
-              small
-              buttonSize="xl"
-              :search-provider="geocodingInfoForSearch"
-              :accentColor="accentColor"
-              @set-location="setLocationFromSearchFeature"
-              @error="searchErrorMessage = $event"
             >
-            </location-search>
-            <icon-button
-            v-if="getMyLocation && narrow"
-            :id="'my-location-overmap' + (learnerPath === 'Clouds' ? '-budge' : '')"
-            fa-icon="location-crosshairs"
-            fa-size="2xl"
-            :color="myLocationColor"
-            :focus-color="myLocationColor"
-            :box-shadow="false"
-            :tooltip-text="myLocationToolTip"
-            :show-tooltip="!mobile"
-            @update:modelValue="(value: boolean) => {
-              if(value) {
-                ($refs.geolocation as any).getLocation();
-                showMyLocationDialog = true;
-                learnerPath = 'Location';
-              }
-              else {
-                console.log('geolocation button pressed = false');
-              }
+              <location-search
+                v-model="searchOpen"
+                small
+                buttonSize="xl"
+                :search-provider="geocodingInfoForSearch"
+                :accentColor="accentColor"
+                @set-location="setLocationFromSearchFeature"
+                @error="searchErrorMessage = $event"
+              >
+              </location-search>
+              <icon-button
+                v-if="getMyLocation"
+                id="my-location-overmap"
+                fa-icon="location-crosshairs"
+                fa-size="2xl"
+                :color="myLocationColor"
+                :focus-color="myLocationColor"
+                :box-shadow="false"
+                :tooltip-text="myLocationToolTip"
+                :show-tooltip="!mobile"
+                @update:modelValue="(value: boolean) => {
+                  if(value) {
+                    ($refs.geolocation as any).getLocation();
+                    showMyLocationDialog = true;
+                    learnerPath = 'Location';
+                  }
+                  else {
+                    console.log('geolocation button pressed = false');
+                  }
 
-            }"
-          ></icon-button>
+                }"
+              ></icon-button>
+            </div>
             <icon-button
               v-if="narrow"
               id="eclipse-details-overmap"
@@ -365,15 +369,14 @@
       <v-card
         class="bottom-sheet-card">
         <v-card-title tabindex="0"><h3 class="v-btn tab-title">Information</h3></v-card-title>
-          <font-awesome-icon
-          id="close-text-icon"
-          class="control-icon"
-          :icon="`square-xmark`"
-          size="xl"
+        <div
+          class="dialog-close-button"
           @click="showInfoSheet = false"
           @keyup.enter="showInfoSheet = false"
           tabindex="0"
-        ></font-awesome-icon>
+        >
+          <font-awesome-icon icon="square-xmark" size="xl" :color="accentColor"></font-awesome-icon>
+        </div>
         <v-card class="no-bottom-border-radius scrollable">
           <v-card-text class="info-text no-bottom-border-radius">
             <v-container id="learn-more-content">
@@ -469,15 +472,14 @@
     >
       <v-card class="bottom-sheet-card">
         <v-card-title tabindex="0"><h3 class="v-btn tab-title">User Guide</h3></v-card-title>
-        <font-awesome-icon
-          id="close-text-icon"
-          class="control-icon"
-          :icon="`square-xmark`"
-          size="xl"
+        <div
+          class="dialog-close-button"
           @click="showWWTGuideSheet = false"
           @keyup.enter="showWWTGuideSheet = false"
           tabindex="0"
-        ></font-awesome-icon>
+        >
+          <font-awesome-icon icon="square-xmark" size="xl" :color="accentColor"></font-awesome-icon>
+        </div>
         <v-card class="no-bottom-border-radius scrollable">
           <v-card-text class="info-text no-bottom-border-radius">
             <v-container  id="user-guide">
@@ -1224,15 +1226,15 @@
         >
       <v-card>
           <v-card-text class="pb-8">
-            <font-awesome-icon
-                style="position:absolute;right:12px;cursor:pointer;padding:1em;margin:-1em"
-                icon="square-xmark"
-                size="xl"
-                @click="showForecastSheet = false"
-                @keyup.enter="showForecastSheet = false"
-                tabindex="0"
-              ></font-awesome-icon>
-            <open-meteo-forecast 
+            <div
+              class="dialog-close-button"
+              @click="showForecastSheet = false"
+              @keyup.enter="showForecastSheet = false"
+              tabindex="0"
+            >
+              <font-awesome-icon icon="square-xmark" size="xl"></font-awesome-icon>
+            </div>
+            <open-meteo-forecast
               :location="locationDeg"
               :location-str="selectedLocationText"
               :time="(eclipsePrediction !== null && eclipseType != 'None') ? eclipsePrediction.maxTime[0] : null"
@@ -1249,14 +1251,14 @@
         >
         <v-card>
           <v-card-text>
-            <font-awesome-icon
-                style="position:absolute;right:12px;cursor:pointer;padding:1em;margin:-1em"
-                icon="square-xmark"
-                size="xl"
-                @click="showEclipsePredictionSheet = false"
-                @keyup.enter="showEclipsePredictionSheet = false"
-                tabindex="0"
-              ></font-awesome-icon>
+            <div
+              class="dialog-close-button"
+              @click="showEclipsePredictionSheet = false"
+              @keyup.enter="showEclipsePredictionSheet = false"
+              tabindex="0"
+            >
+              <font-awesome-icon icon="square-xmark" size="xl"></font-awesome-icon>
+            </div>
             <eclipse-timer show-timer :prediction="eclipsePrediction" :timezone="selectedTimezone" :color="accentColor" :location="selectedLocationText"/>
           </v-card-text>
         </v-card>
@@ -4808,15 +4810,6 @@ body {
   cursor: pointer;
 }
 
-.control-icon {
-  pointer-events: auto;
-
-  &:hover {
-    cursor: pointer;
-  }
-
-}
-
 // these are now in #top-content
 
 #left-buttons-wrapper {
@@ -5438,13 +5431,6 @@ video, #info-video {
   }
   
 
-  #close-text-icon {
-    position: absolute;
-    top: 0.25em;
-    right: calc((3em - 0.6875em) / 3); // font-awesome-icons have width 0.6875em
-    color: var(--accent-color);
-  }
-
   // This prevents the tabs from having some extra space to the left when the screen is small
   // (around 400px or less)
   .v-tabs:not(.v-tabs--vertical).v-tabs--right>.v-slide-group--is-overflowing.v-tabs-bar--is-mobile:not(.v-slide-group--has-affixes) .v-slide-group__next, .v-tabs:not(.v-tabs--vertical):not(.v-tabs--right)>.v-slide-group--is-overflowing.v-tabs-bar--is-mobile:not(.v-slide-group--has-affixes) .v-slide-group__prev {
@@ -5482,6 +5468,29 @@ video, #info-video {
       opacity: 0.7;
     }
   }
+}
+
+// A real, solidly-sized clickable box rather than a bare icon enlarged via
+// negative margin/padding — some mobile browsers (Safari in particular)
+// only hit-test the icon's painted SVG content, not that kind of CSS-only
+// hit-area expansion, so taps near the edge of the icon can miss entirely.
+.dialog-close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  // At least Apple/Google's recommended ~44px minimum touch target —
+  // the icon itself is much smaller, but the tap target shouldn't be.
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  // Tells the browser this element is a simple tap target, so it doesn't
+  // wait to see if a second tap is coming (double-tap-to-zoom) before
+  // committing to the click — that wait is a common source of taps that
+  // "look right" but silently don't register on mobile.
+  touch-action: manipulation;
 }
 
 #body-logos {
@@ -5582,11 +5591,19 @@ video, #info-video {
     font-size: calc(1.2 * var(--default-font-size));
     font-weight: bold;
 
+    @media (max-width: 600px) {
+      font-size: var(--default-font-size);
+    }
+
     #show-guided-content-button {
       width: fit-content;
       height: fit-content;
       padding: 6px 12px;
       border-radius: var(--normal-border-radius);
+
+      @media (max-width: 600px) {
+        padding-left: 6px;
+      }
     }
   }
 
@@ -5938,42 +5955,30 @@ video, #info-video {
     justify-content: center;
 
 
-    .location-search-overmap {
-      height: fit-content;
+    .map-search-stack {
       position: absolute;
       z-index: 600;
       right: 1.25em;
       top: 1em;
-      
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+
       &.overmap-low {
         top: 2em;
       }
-      
-      
+
       &.overmap-budge {
         right: 4.5em;
       }
-    }
-
-    #my-location-overmap-button {
-      position: absolute;
-      z-index: 550;
-      right: 1.25em;
-      bottom: 1rem;
-    }
-
-    #my-location-overmap-budge-button {
-      position: absolute;
-      z-index: 550;
-      right: 4.5em;
-      bottom: 1rem;
     }
 
     #eclipse-details-overmap-button {
       position: absolute;
       z-index: 600;
       bottom: 1rem;
-      left: 1rem;
+      right: 1.25em;
     }
     
     .map-container {
@@ -6383,7 +6388,7 @@ video, #info-video {
     transition: border-color 0.2s ease;
 
     @media (max-width: 600px) {
-      width: 10rem;
+      width: 9rem;
     }
 
     &:hover,
