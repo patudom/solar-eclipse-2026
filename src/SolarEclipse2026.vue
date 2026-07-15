@@ -609,34 +609,6 @@
                       <li>
                         Eclipsed: The fraction of the Sun that is eclipsed in the current view (for the selected time and location).
                       </li>
-                      <li v-if="!showNewMobileUI" class="switch-bullets">
-                        <v-switch
-                          class="display-only-switch"
-                          v-model="displaySwitchOn"
-                          density="compact"
-                          hide-details
-                          disabled
-                          :ripple="false"
-                          :color="accentColor"
-                          true-icon="mdi-white-balance-sunny"
-                        >
-                        </v-switch>
-                        <span class="user-guide-emphasis"> Track Sun:</span> Camera follows the Sun.
-                      </li>
-                      <li v-if="!showNewMobileUI" class="switch-bullets mb-5">
-                        <v-switch
-                          class="display-only-switch"
-                          v-model="displaySwitchOff"
-                          density="compact"
-                          hide-details
-                          disabled
-                          :ripple="false"
-                          :color="accentColor"
-                          false-icon="mdi-image"
-                        >
-                        </v-switch>
-                        <span class="user-guide-emphasis"> Don't Track Sun:</span> Camera stays fixed and shows motion of Sun (and Moon) against the sky.
-                      </li>
                     </ul>
 
                     <v-divider thickness="2px" class="solid-divider"></v-divider>
@@ -661,7 +633,7 @@
                         </v-icon> to display detailed <span class="user-guide-emphasis-white">eclipse timing</span> predictions for your selected location.
                       </li>
                       <li v-if="!showNewMobileUI">
-                        <span class="user-guide-emphasis-white">Center Sun:</span> Recenter view on Sun.
+                        <span class="user-guide-emphasis-white">Track Sun:</span> Camera follows the Sun. Turn off to keep the camera fixed and show motion of Sun (and Moon) against the sky.
                       </li>
                       <li v-if="!showNewMobileUI">
                         <span class="user-guide-emphasis-white">Sky Grid:</span> Display altitude/azimuth grid with cardinal directions.
@@ -878,7 +850,6 @@
         <div
           id="controls"
           class="control-icon-wrapper"
-          v-if="showNewMobileUI"
         >
           <div id="controls-top-row">
             <font-awesome-icon
@@ -893,12 +864,10 @@
 
           <div v-if="showControls" id="control-checkboxes">
             <v-checkbox
-              v-if="!showNewMobileUI"
               :color="accentColor"
-              v-model="sunCenteredTracking"
-              @change="centerSun()"
-              label="Center Sun"
-              :disabled="sunCenteredTracking"
+              v-model="toggleTrackSun"
+              @keyup.enter="toggleTrackSun = !toggleTrackSun"
+              label="Track Sun"
               hide-details
             />
             <v-checkbox
@@ -921,56 +890,6 @@
               @keyup.enter="useRegularMoon = !useRegularMoon"
               label="Visible Moon"
               hide-details
-            />
-          </div>
-      </div>
-
-        <div
-          id="controls"
-          class="control-icon-wrapper"
-          v-if="!showNewMobileUI"
-        >
-          <div id="controls-top-row">
-            <font-awesome-icon
-              size="lg"
-              :color="accentColor"
-              :icon="showControls ? `chevron-down` : `gear`"
-              @click="showControls = !showControls"
-              @keyup.enter="showControls = !showControls"
-              tabindex="0"
-            />
-          </div>
-
-          <div v-if="showControls" id="control-checkboxes">
-            <v-checkbox
-              v-if="!showNewMobileUI"
-              :color="accentColor"
-              v-model="sunCenteredTracking"
-              @change="centerSun()"
-              label="Center Sun"
-              :disabled="sunCenteredTracking"
-              hide-details
-            />
-            <v-checkbox
-              :color="accentColor"
-              v-model="showAltAzGrid"
-              @keyup.enter="showAltAzGrid = !showAltAzGrid"
-              label="Sky Grid"
-              hide-details
-            />
-            <v-checkbox
-              :color="accentColor"
-              v-model="showHorizon"
-              @keyup.enter="showHorizon = !showHorizon"
-              label="Horizon/Daytime Sky"
-              hide-details
-            />
-            <v-checkbox
-                :color="accentColor"
-                v-model="useRegularMoon"
-                @keyup.enter="useRegularMoon = !useRegularMoon"
-                label="Visible Moon"
-                hide-details
             />
           </div>
       </div>
@@ -1271,30 +1190,6 @@
           <div>{{ selectedLocalDateString }}</div>
           <div v-if="eclipsePredictionText" class="eclipse-status-line">{{ eclipsePredictionText }}</div>
           <div>{{ percentEclipsedText }}</div>
-        </div>
-      </div>
-      <div id="top-switches" v-if="!showNewMobileUI">
-        <div id="track-sun-switch"> 
-          <hover-tooltip
-              location="left"
-              :disabled="mobile"
-            >
-              <template v-slot:target>
-                <v-switch
-                  inset
-                  hide-details
-                  v-model="toggleTrackSun"
-                  :ripple="false"
-                  :color="accentColor"
-                  true-icon="mdi-white-balance-sunny"
-                  false-icon="mdi-image"
-                  @keyup.enter="toggleTrackSun = !toggleTrackSun"
-                  tabindex="0"
-                >
-                </v-switch>
-            </template>
-            {{ toggleTrackSun ? "Stop Tracking Sun" : 'Start Tracking Sun' }}
-          </hover-tooltip>
         </div>
       </div>
     </div>
@@ -2127,7 +2022,7 @@ export default defineComponent({
       selectionProximity: 4,
       pointerMoveThreshold: 6,
       isPointerMoving: false,
-      pointerStartPosition: null as { x: number; y: number } | null,  
+      pointerStartPosition: null as { x: number; y: number } | null,
 
       // "Greatest Eclipse"
       totalEclipseTimeUTC,
@@ -2220,8 +2115,6 @@ export default defineComponent({
       mobileNonMapHeightResizeStartHeight: 0,
 
       inIntro: false,
-      displaySwitchOn: true,
-      displaySwitchOff: false,
       scrollUp: false,
 
       showPrivacyDialog: false,
@@ -2795,11 +2688,11 @@ export default defineComponent({
           this.sunCenteredTracking = false;
         }
       },
-      
+
       get(): boolean {
         // do something more useful later
         return this.toggleTrackSun;
-      }   
+      }
     },
 
     defaultRate(): number {
@@ -2976,18 +2869,6 @@ export default defineComponent({
         instant: true,
         noZoom: true,
         trackObject: true
-      });
-    },
-
-    async centerSun(): Promise<void> {
-      this.sunOffset = null;
-      this.toggleTrackSun = true;
-      this.sunCenteredTracking = true;
-      return this.gotoTarget({
-        place: this.sunPlace,
-        instant: true,
-        noZoom: true,
-        trackObject: this.trackingSun
       });
     },
 
@@ -3267,10 +3148,9 @@ export default defineComponent({
       if (this.showNewMobileUI) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        if (wwtControl._trackingObject !== this.sunPlace) {
+        if (this.toggleTrackSun && wwtControl._trackingObject !== this.sunPlace) {
           this.trackSun();
-          return;
-        } 
+        }
         return;
       } else {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -3747,7 +3627,7 @@ export default defineComponent({
       // @ts-ignore
       Annotation2.clearAll();
       this.clearAnnotations();
-    },    
+    },
 
     onPointerMove(event: PointerEvent) {
       if (!this.isPointerMoving && this.pointerStartPosition !== null) {
@@ -3768,7 +3648,7 @@ export default defineComponent({
     onPointerUp(_event: PointerEvent) {
       this.pointerStartPosition = null;
       this.isPointerMoving = false;
-      
+
       const sunLocation = Planets['_planetLocations'][0];
       const sunPoint = getScreenPosForCoordinates(this.wwtControl, sunLocation.RA, sunLocation.dec);
       this.sunOffset = {
@@ -4481,7 +4361,7 @@ export default defineComponent({
       this.getEclipsePrediction();
       this.updateFrontAnnotations();
 
-      
+
       if (this.trackingSun) {
         //this.centerSun();
       } else {
@@ -4671,7 +4551,7 @@ export default defineComponent({
         return;
       }
     },
-    
+
     playbackRate(val: number) {
       if (Math.abs(val) > 11_000) {
         console.warn('playbackRate too high, setting to maxPlaybackRate');
@@ -4792,7 +4672,7 @@ body {
   .location-search-overwwt {
     z-index: 600;
   }
-  
+
   #center-page-banner {
     position: absolute;
     width: 25%;
@@ -5601,44 +5481,6 @@ video, #info-video {
       font-weight: bold;
     }
     
-    li.switch-bullets {
-      margin-top: -1em;
-
-      padding-left: 0.5ch;
-      .v-switch {
-        transform: translateY(15%);
-      }
-
-      .user-guide-emphasis {
-        padding-left: 1ch;
-      }
-    }
-
-    .display-only-switch {
-    
-      display: inline-block;
-      position: relative;
-      bottom: calc(-0.5 * var(--default-line-height));
-
-      .v-selection-control--density-default {
-        --v-selection-control-size:var(--default-line-height);
-      }
-
-      .v-selection-control--disabled {
-      opacity: 100%;
-      pointer-events: none;
-
-        .v-switch__thumb {
-          background-color: black;
-        }
-
-        .v-icon {
-          color: var(--accent-color);
-          background-color: black;
-        }
-      }
-    }
-
     .solid-divider {
       margin-top: 1rem;
       color: var(--sky-color);
@@ -6594,61 +6436,7 @@ video, #info-video {
     }
   }
 
-  .v-switch__thumb {
-    color: var(--accent-color);
-    background-color: black;
-
-    @media (min-width: 751px) { //LARGE
-      height: 2.1rem;
-      width: 2.2rem;
-    }
-  }
-
-  .v-input--density-default {
-    --v-input-control-height: 0;
-  }
-
-  .v-selection-control--density-default {
-    --v-selection-control-size: auto;
-  } 
-
-  .v-switch__track {
-    background-color: #737373 !important;
-  }
-
-  .v-switch--inset .v-switch__track {
-    @media (min-width: 751px) { //LARGE
-      height: 2.5rem;
-      width: 4.2rem;
-    }
-  }
-
   pointer-events: auto;
-
-  #top-switches {
-    position: absolute;
-    right: 0;
-    text-align: right;
-
-    @media (max-width: 750px) { //SMALL
-      margin-top: 0.5rem;
-    } 
-
-    @media (min-width: 751px) { //LARGE
-      margin-top: 0.7rem;
-    } 
-
-  }
- 
-  #track-sun-switch {
-    @media (max-width: 750px) { //SMALL
-      margin-top: 0.5rem;
-    } 
-
-    @media (min-width: 751px) { //LARGE
-      margin-top: 0.7rem;
-    } 
-  }
 }
 
 #change-optout {
