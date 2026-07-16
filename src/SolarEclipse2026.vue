@@ -1430,19 +1430,7 @@
                 </div>
             </div>
             <div id="speed-text">
-              Time rate: 
-              <span v-if="playbackRate===1 && playing">
-                Real time
-              </span>
-              <span v-if="playbackRate!=1 && playing">
-                {{ niceRound(playbackRate) }}&times;
-              </span>
-              <span v-if="!playing">
-                ({{ niceRound(playbackRate) }}&times;) Paused
-              </span>
-              <span v-if="playing && forceRate">
-                (Slowed for totality)
-              </span>
+              Speed: {{ niceRound(playbackRate) }}x real time<span v-if="!playing"> (paused)</span>
             </div>
           </div>
           <div id="slider">
@@ -2100,7 +2088,7 @@ export default defineComponent({
       playbackVisible: false,
       maxPlaybackRate: MAX_PLAYBACK_RATE,
       
-      horizonRate: 625, 
+      horizonRate: 500,
       scopeRate: 100, 
 
       startPaused: false,
