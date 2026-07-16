@@ -1371,6 +1371,7 @@
                     @activate="() => {
                       playbackVisible = !playbackVisible;
                     }"
+                    @keydown="onSpeedControlIconKeydown"
                     :fa-icon="playbackVisible ? 'times' : 'gauge-high'"
                     :color="accentColor"
                     :focus-color="accentColor"
@@ -1384,12 +1385,14 @@
                 </template>
                     <playback-control
                     class="desktop-playback-control"
+                      ref="desktopPlaybackControl"
                       v-if="playbackVisible"
                       :model-value="playbackRate"
                       @update:modelValue="(value: number) => {
                         forceRate = false;
                         playbackRate = value;
                       }"
+                      @tab-out="focusSpeedControlIcon"
                       :max-power="3"
                       :max="Math.log10(1000) + 1"
                       :color="accentColor"
@@ -3193,7 +3196,22 @@ export default defineComponent({
     },
 
     closeSplashScreen() {
-      this.showSplashScreen = false; 
+      this.showSplashScreen = false;
+    },
+
+    // Tabbing off the close/activator icon (either direction) while the
+    // speed control popup is open would otherwise escape to the rest of
+    // the page; loop it back onto the slider thumb instead, so the two
+    // are the only stops while the popup's open.
+    onSpeedControlIconKeydown(event: KeyboardEvent) {
+      if (this.playbackVisible && event.key === 'Tab') {
+        event.preventDefault();
+        (this.$refs.desktopPlaybackControl as { focusSlider?: () => void } | undefined)?.focusSlider?.();
+      }
+    },
+
+    focusSpeedControlIcon() {
+      document.getElementById('speed-control-icon-button')?.focus();
     },
 
     updateWWTLocation() {

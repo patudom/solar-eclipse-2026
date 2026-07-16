@@ -50,7 +50,7 @@ export default defineComponent({
     'v-slider': VSlider,
   },
   
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'tab-out'],
 
   props: {
     // Define the props here
@@ -140,7 +140,19 @@ export default defineComponent({
       }
     });
     resizeObserver.observe(document.getElementById('enclosing-playback-container')!);
-    
+
+    // @keydown on <v-slider> in the template doesn't reach here -- Tab
+    // presses on the thumb bubble past whatever Vuetify attaches
+    // internally without ever hitting a fallthrough listener on the
+    // component root. Delegate from this component's own (stable, never
+    // internally re-rendered) root instead of the thumb itself, which
+    // Vuetify can recreate after mount, silently dropping a directly
+    // attached listener.
+    document.getElementById('enclosing-playback-container')?.addEventListener('keydown', this.onSliderKeydown);
+  },
+
+  beforeUnmount() {
+    document.getElementById('enclosing-playback-container')?.removeEventListener('keydown', this.onSliderKeydown);
   },
 
 
@@ -174,6 +186,26 @@ export default defineComponent({
           left: pos + '%',
         },
       };
+    },
+
+    // Tab (either direction) off the slider thumb otherwise escapes to
+    // wherever's next in the page's normal tab order -- the parent traps
+    // it back onto the popup's own close button instead. Delegated from
+    // the component root, so only act when the thumb itself was focused.
+    onSliderKeydown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement | null;
+      if (event.key === 'Tab' && target?.classList.contains('v-slider-thumb')) {
+        event.preventDefault();
+        this.$emit('tab-out');
+      }
+    },
+
+    // Called by the parent to close the loop: focus back onto the slider
+    // thumb when tabbing away from the popup's close button.
+    focusSlider() {
+      const el = (this.$refs.slider as { $el?: HTMLElement } | undefined)?.$el;
+      const thumb = el?.querySelector('.v-slider-thumb') as HTMLElement | null;
+      thumb?.focus();
     },
 
   },
