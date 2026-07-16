@@ -170,7 +170,7 @@ export default defineComponent({
     cssStyles() {
       return {
         '--accent-color': this.accentColor,
-        '--bg-color': 'black',
+        '--bg-color': 'rgba(0, 0, 0, 0.7)',
         '--fg-container-padding': this.searchOpen ? (this.small ? '0px 5px 0px 0px' : '5px 10px 12px 10px') : '0px',
         // --tight-border-radius/--normal-border-radius come from the app
         // itself (set on <v-app>, which is an ancestor of every
@@ -185,7 +185,7 @@ export default defineComponent({
         // So the border moves onto the icon itself instead while closed.
         '--container-border': this.searchOpen ? '2px solid var(--accent-color)' : 'none',
         '--search-icon-border': this.searchOpen ? 'none' : '2px solid var(--accent-color)',
-        '--search-icon-background': this.searchOpen ? 'none' : 'black',
+        '--search-icon-background': this.searchOpen ? 'none' : 'rgba(0, 0, 0, 0.7)',
       };
     },
   },
@@ -262,6 +262,7 @@ export default defineComponent({
   height: fit;
   color: var(--accent-color);
   background-color: var(--bg-color);
+  backdrop-filter: blur(6px);
   border: var(--container-border);
   border-radius: var(--border-radius);
   padding: var(--fg-container-padding);
@@ -317,6 +318,7 @@ export default defineComponent({
     left: -1px;
     width: calc(100% + 2px);
     background: var(--bg-color);
+    backdrop-filter: blur(6px);
     border: 2px solid var(--accent-color);
     border-top: 0px;
     // Results only ever show while searchOpen (the container itself is

@@ -251,7 +251,7 @@ export default defineComponent({
   border: 2px solid var(--color);
   // min-width: 200px;
   max-width: 510px;
-  background-color: rgba(39, 39, 39, 0.5);
+  background-color: rgba(39, 39, 39, 0.7);
   backdrop-filter: blur(6px);
   font-size: 0.7rem;
   --track-wdith: 0px; // get set by the resize observer to the actual track width
@@ -264,7 +264,7 @@ export default defineComponent({
     padding: 0;
     padding-inline-start: 0.25rem;
     padding-block-end: 0.5em;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
 
     border: 2px solid var(--color);
