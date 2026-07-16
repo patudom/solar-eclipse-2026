@@ -28,6 +28,7 @@
     </template>
   </icon-button>
   </div>
+  <div id="guided-content-wrapper">
   <v-container
     id="guided-content-container"
     v-show="showGuidedContent"
@@ -310,7 +311,9 @@
         </v-slide-y-transition>
       </v-hover>
     </div>
+  </v-container>
     <div
+      v-show="showGuidedContent"
       id="top-container-resize-handle"
       role="separator"
       aria-orientation="horizontal"
@@ -320,8 +323,8 @@
       @touchstart="startTopContainerResize"
       @keydown="onTopContainerResizeKeydown"
     ></div>
-  </v-container>
-  
+  </div>
+
 
     <v-dialog
       scrim="false"
@@ -5631,6 +5634,21 @@ body {
     }
   }
 
+#guided-content-wrapper {
+  // #top-container-resize-handle used to be a child of
+  // #guided-content-container, positioned bottom:0 against it -- but
+  // that container's overflow-y: auto (needed for its own scrollable
+  // text content) clipped the handle's keyboard focus ring right at
+  // the same edge, with no room to render. Moved the handle out to be
+  // a sibling here instead, so it escapes that clipping. This wrapper's
+  // own box includes the container's outer margin (below), so --margin
+  // is hoisted up here for the handle to also offset by, keeping it
+  // flush against the container's actual bottom border rather than the
+  // outer edge of its margin.
+  --margin: 0.5rem;
+  position: relative;
+}
+
 #guided-content-container {
   --top-content-max-height: max(30vmin, 35vh);
   --top-content-min-height: fit-content;
@@ -5641,14 +5659,13 @@ body {
     --top-content-min-height: calc(100% - 1rem);
     box-sizing: border-box;
   }
-  
+
   font-size: var(--default-font-size);
   @media (max-width: 350px) and (max-height: 600px) {
       font-size: min(3vw, 1.75vh);
   }
-  
+
   --map-max-height: var(--top-content-max-height); // Keep this about 3 smaller than above // not used any more
-  --margin: 0.5rem;
   --container-padding: 0.5rem;
   position: relative;
   margin: var(--margin);
@@ -5928,34 +5945,42 @@ body {
     transition: none !important;
   }
 
-  #top-container-resize-handle {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 10px;
-    z-index: 20;
-    cursor: row-resize;
-    touch-action: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
 
-    &::before {
-      content: "";
-      width: 40px;
-      height: 4px;
-      border-radius: 2px;
-      background-color: var(--accent-color);
-      opacity: 0.6;
-    }
+// A sibling of #guided-content-container now (see #guided-content-wrapper
+// above) rather than a child, so its focus ring isn't clipped by that
+// container's own overflow-y: auto.
+#top-container-resize-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  // Offset by the wrapper's --margin so this sits flush against the
+  // container's own bottom border, not the outer edge of its margin.
+  bottom: var(--margin);
+  height: 10px;
+  // Now a sibling of #guided-content-container (z-index: 400) rather
+  // than a child, so it has to outrank that z-index directly to avoid
+  // being painted over and losing pointer events in their overlap area.
+  z-index: 401;
+  cursor: row-resize;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    &:hover::before,
-    &:active::before {
-      opacity: 1;
-    }
+  &::before {
+    content: "";
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: var(--accent-color);
+    opacity: 0.6;
   }
 
+  &:hover::before,
+  &:active::before {
+    opacity: 1;
+  }
 }
 
 #map-column { // v-col
