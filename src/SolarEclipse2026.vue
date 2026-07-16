@@ -716,6 +716,13 @@
       @pointerdown="onPointerDown"
       @pointerup="onPointerUp"
     ></WorldWideTelescope>
+    <div
+      id="eclipse-percent-indicator"
+      v-if="currentFractionEclipsed > 0"
+      :style="{ top: eclipsedIndicatorTop + 'px' }"
+    >
+      {{ percentEclipsedText }}
+    </div>
     <div>
       <div id="left-buttons-wrapper" :class="[!showGuidedContent ?'budge' : '']">
         <location-search
@@ -1155,7 +1162,6 @@
           <div class="location-status-name"><strong>{{ selectedLocationText }}</strong></div>
           <div>{{ selectedLocalDateString }}</div>
           <div v-if="eclipsePredictionText" class="eclipse-status-line">{{ eclipsePredictionText }}</div>
-          <div>{{ percentEclipsedText }}</div>
         </div>
 
         <icon-button
@@ -2064,6 +2070,9 @@ export default defineComponent({
       normalBorderRadius: "10px",
       tightBorderRadius: "5px",
       guidedContentHeight: "300px",
+      // Vertical position (px, relative to #main-content's own top edge)
+      // for the eclipse-percent indicator -- see updateEclipsedIndicatorPosition().
+      eclipsedIndicatorTop: 0,
       showGuidedContent: true,
       topContainerCustomHeight: null as number | null,
       isResizingTopContainer: false,
@@ -2286,6 +2295,11 @@ export default defineComponent({
     this.$nextTick(() => {
       window.addEventListener('resize', this.onResize);
       this.onResize();
+    });
+
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.updateEclipsedIndicatorPosition);
+      this.updateEclipsedIndicatorPosition();
     });
 
     document.addEventListener('keydown', this.onSpeedControlTabKeydown);
@@ -3692,6 +3706,26 @@ export default defineComponent({
       this.updateGuidedContentHeight();
     },
 
+    // Positions the eclipse-percent indicator halfway between the top of
+    // the time controls (the speed-control popup's own top edge while
+    // it's open, since the popup then sits above the toolbar and is the
+    // true top of that cluster; the toolbar's own top edge otherwise)
+    // and the vertical middle of the WWT canvas (#main-content).
+    updateEclipsedIndicatorPosition() {
+      const mainContent = document.getElementById('main-content');
+      const timeControlsEl = this.playbackVisible
+        ? document.querySelector('.desktop-playback-control')
+        : document.getElementById('tools');
+      if (!mainContent || !timeControlsEl) {
+        return;
+      }
+      const mainRect = mainContent.getBoundingClientRect();
+      const controlsTop = timeControlsEl.getBoundingClientRect().top;
+      const canvasMiddle = mainRect.top + mainRect.height / 2;
+      const midpoint = (controlsTop + canvasMiddle) / 2;
+      this.eclipsedIndicatorTop = midpoint - mainRect.top;
+    },
+
     startTopContainerResize(event: MouseEvent | TouchEvent) {
       const container = document.getElementById('guided-content-container');
       if (!container) {
@@ -4270,6 +4304,25 @@ export default defineComponent({
 
     playingWaitCount(val: number, old: number) {
       console.log(`Playing wait count: ${old} ---> ${val}`);
+    },
+
+    // guidedContentHeight changes on every path that can resize
+    // #main-content (window resize, dragging the resize handle, toggling
+    // guided content) -- and playbackVisible changes which element counts
+    // as "the top of the time controls". Both should reposition the
+    // eclipse-percent indicator.
+    guidedContentHeight() {
+      this.$nextTick(() => this.updateEclipsedIndicatorPosition());
+    },
+
+    playbackVisible() {
+      // Vuetify's connected location-strategy positions the popup itself
+      // asynchronously, a frame or two after Vue's own DOM update --
+      // nextTick alone can still catch the popup at its pre-positioned
+      // (e.g. top: 0) spot, so wait an extra couple of frames too.
+      this.$nextTick(() => {
+        requestAnimationFrame(() => requestAnimationFrame(() => this.updateEclipsedIndicatorPosition()));
+      });
     },
     
     showNewMobileUI(narrow: boolean) {
@@ -6452,6 +6505,25 @@ body {
 #eclipse-percent-chip {
     display: flex;
     width: 100%;
+}
+
+// Styled to match #speed-text. top is set inline (see
+// updateEclipsedIndicatorPosition) -- vertically halfway between the top
+// of the time controls and the middle of the WWT canvas (#main-content,
+// its positioning parent here).
+#eclipse-percent-indicator {
+  position: absolute;
+  right: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding-inline: 0.4em;
+  padding-block: 0.15em;
+  border-radius: 0.3em;
+  font-size: calc(1 * var(--default-font-size));
+  text-wrap: nowrap;
+  width: fit-content;
+  color: white;
+  z-index: 50;
+  pointer-events: none;
 }
 
 #top-wwt-content {
