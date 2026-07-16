@@ -45,9 +45,9 @@
       <font-awesome-icon
         class="geocoding-close-icon"
         v-show="searchOpen && !stayOpen"
-        icon="circle-xmark"
+        icon="xmark"
         :size="searchOpen ? 'xl' : '1x'"
-        color="gray"
+        :color="accentColor"
         @click="() => {
           searchOpen = false;
           clearSearchData();

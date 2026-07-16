@@ -348,7 +348,7 @@
           @keyup.enter="showInfoSheet = false"
           tabindex="0"
         >
-          <font-awesome-icon icon="square-xmark" size="xl" :color="accentColor"></font-awesome-icon>
+          <font-awesome-icon icon="xmark" size="xl" :color="accentColor"></font-awesome-icon>
         </div>
         <v-window v-model="infoTab" id="tab-items" class="no-bottom-border-radius">
           <v-window-item>
@@ -979,14 +979,14 @@
       >
       <div id="instruction-overlay">
         <div id="overlay-close">
-          <v-icon
+          <font-awesome-icon
             class="overlay-close-icon"
-            icon="mdi-close-box"
-            color="gray"
+            icon="xmark"
+            :color="accentColor"
             @click="inIntro = !inIntro"
             @keyup.enter="inIntro = !inIntro"
             tabindex="0"
-          ></v-icon>
+          ></font-awesome-icon>
         </div>
         <div class="inst-quad top-left">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
@@ -1033,13 +1033,13 @@
             <font-awesome-icon
               size="xl"
               class="ma-1"
-              color="#b3d5e6"
-              icon='square-xmark'
+              :color="accentColor"
+              icon='xmark'
               @click="inIntro = !inIntro"
               @keyup.enter="inIntro = !inIntro"
               tabindex="0"
               tooltip-location="start"
-            /> 
+            />
           </div>
           </template>
           <v-window-item :value="1">
@@ -1209,7 +1209,7 @@
               @keyup.enter="showEclipsePredictionSheet = false"
               tabindex="0"
             >
-              <font-awesome-icon icon="square-xmark" size="xl"></font-awesome-icon>
+              <font-awesome-icon icon="xmark" size="xl" :color="accentColor"></font-awesome-icon>
             </div>
             <eclipse-timer show-timer :prediction="eclipsePrediction" :timezone="selectedTimezone" :color="accentColor" :location="selectedLocationText"/>
           </v-card-text>
@@ -5121,7 +5121,6 @@ body {
   left: 50%;
   transform: translateX(-50%);
   font-size: calc(2.5*var(--default-font-size));
-  color: #888888;
 }
 
 .bottom-sheet {
