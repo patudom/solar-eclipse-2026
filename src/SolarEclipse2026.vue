@@ -4532,6 +4532,26 @@ export default defineComponent({
   --time-content-max-width: 700px;
 }
 
+// From Sara Soueidan (https://www.sarasoueidan.com/blog/focus-indicators/) & Erik Kroes (https://www.erikkroes.nl/blog/the-universal-focus-state/)
+// checkbox will only get oreo styling when user tabs by keyboard.
+:focus-visible, .v-checkbox .v-selection-control__input:has(:focus-visible) {
+  outline: 9px double white !important;
+  box-shadow: 0 0 0 6px black !important;
+  border-radius: .125rem;
+}
+
+// Reduce focus indicator for text input fields only (they have their own built-in indicators)
+.v-text-field input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+// Remove oreo focus styling from the Information/User Guide dialog
+#text-bottom-sheet .v-overlay__content:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 // A thin, subdued scrollbar that only takes up visible space once there's
 // something to scroll (overflow: auto, not scroll), but still reserves its
 // track via scrollbar-gutter so content doesn't reflow when it appears.
