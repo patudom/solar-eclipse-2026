@@ -5187,9 +5187,17 @@ body {
     position: absolute;
     top: 0.5rem;
     right: 1.75rem;
-    text-align: end;
     color: var(--accent-color);
     font-size: min(8vw, 5vh);
+    // Sized in em (not just the "x" glyph's own, narrower-than-tall advance
+    // width/line-height) so the box -- and its keyboard focus outline --
+    // is a clean square instead of a tall, skinny rectangle.
+    width: 1em;
+    height: 1em;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       cursor: pointer;
