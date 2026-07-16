@@ -5488,8 +5488,11 @@ body {
 // hit-area expansion, so taps near the edge of the icon can miss entirely.
 .dialog-close-button {
   position: absolute;
-  top: 0;
-  right: 0;
+  // Flush against the card's own corner left no room for the oreo focus
+  // ring, which got clipped by the card's own overflow on the top/right
+  // edges. Inset it slightly instead.
+  top: 12px;
+  right: 12px;
   z-index: 1;
   // At least Apple/Google's recommended ~44px minimum touch target —
   // the icon itself is much smaller, but the tap target shouldn't be.
