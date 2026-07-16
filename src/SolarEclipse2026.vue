@@ -126,7 +126,6 @@
                 hide-details
                 :color="accentColor"
                 @click="infoPage++"
-                @keyup.enter="infoPage++"
                 elevation="0"
                 >
                 More
@@ -137,7 +136,6 @@
                 density="compact"
                 :color="accentColor"
                 @click="infoPage--"
-                @keyup.enter="infoPage--"
                 elevation="0"
                 >
                 Back
@@ -1114,21 +1112,19 @@
           <div>
             <v-btn
               v-if="(introSlide > 1) && (!showNewMobileUI)"
-              id="intro-next-button"
+              id="intro-back-button"
               :color="accentColor"
               @click="introSlide--"
-              @keyup.enter="introSlide--"
               elevation="0"
               >
               Back
             </v-btn>
           </div>
-          
+
           <v-btn
             id="intro-next-button"
             :color="accentColor"
             @click="introSlide++"
-            @keyup.enter="introSlide++"
             elevation="0"
             >
             {{ introSlide < 2 ? 'Next' : 'Get Started' }}
@@ -1559,7 +1555,6 @@
             class="privacy-button"
             color="#BDBDBD"
             @click="showRatingPrivacyPolicy = true"
-            @keyup.enter="showRatingPrivacyPolicy = true"
             size="small"
             target="_blank"
             rel="noopener noreferrer"
@@ -6222,7 +6217,7 @@ body {
       outline: 1px solid red;
     }
     
-    #intro-next-button {
+    #intro-next-button, #intro-back-button {
       background-color: rgba(18, 18, 18,.5);
     }
   }
