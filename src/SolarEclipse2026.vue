@@ -2,6 +2,7 @@
 <v-app
   id="app"
   :style="cssVars"
+  :inert="showSplashScreen"
 >
 
   <!-- Floating button to reopen the top content box once it's hidden.
