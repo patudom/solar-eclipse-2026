@@ -4884,7 +4884,8 @@ body {
 }
 
 #controls {
-  background: black;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(6px);
   padding-block: 0.5em;
   padding-right: 0.5em;
   border-radius: var(--tight-border-radius);
@@ -6224,7 +6225,8 @@ body {
   // unbolded details underneath.
   #location-status-box {
     pointer-events: auto;
-    background: black;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(6px);
     color: white;
     border: 2px solid var(--accent-color);
     border-radius: var(--tight-border-radius);
