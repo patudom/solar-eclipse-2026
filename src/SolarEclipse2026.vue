@@ -828,14 +828,14 @@
           class="control-icon-wrapper"
         >
           <div id="controls-top-row">
-            <font-awesome-icon
-              size="lg"
+            <icon-button
+              v-model="showControls"
+              :fa-icon="showControls ? 'chevron-up' : 'sliders'"
+              fa-size="lg"
               :color="accentColor"
-              :icon="showControls ? `chevron-down` : `gear`"
-              @click="showControls = !showControls"
-              @keyup.enter="showControls = !showControls"
-              tabindex="0"
-            />
+              :focus-color="accentColor"
+              :box-shadow="false"
+            ></icon-button>
           </div>
 
           <div v-if="showControls" id="control-checkboxes">
