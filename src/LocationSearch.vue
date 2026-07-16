@@ -184,6 +184,12 @@ export default defineComponent({
         // bigger in each dimension than every other icon-wrapper button.
         // So the border moves onto the icon itself instead while closed.
         '--container-border': this.searchOpen ? '2px solid var(--accent-color)' : 'none',
+        // Closed, the container collapses (zero padding/border) to hug just
+        // the icon, so its own background would render as a solid patch
+        // exactly behind the (background-less) icon -- indistinguishable
+        // from the icon itself having a background. Only give the container
+        // a background while it's actually showing the input row.
+        '--container-background': this.searchOpen ? 'rgba(0, 0, 0, 0.7)' : 'transparent',
         '--search-icon-border': this.searchOpen ? 'none' : '2px solid var(--accent-color)',
         '--search-icon-background': 'none',
       };
@@ -261,7 +267,7 @@ export default defineComponent({
   width: fit-content;
   height: fit;
   color: var(--accent-color);
-  background-color: var(--bg-color);
+  background-color: var(--container-background);
   backdrop-filter: blur(6px);
   border: var(--container-border);
   border-radius: var(--border-radius);
