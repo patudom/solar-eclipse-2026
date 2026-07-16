@@ -6156,6 +6156,15 @@ body {
   margin-left: 5px;
   padding-right: 1rem;
   max-width: 235px;
+
+  // The popup is positioned via Vuetify's "connected" location strategy,
+  // which doesn't reactively re-track the activator button's position
+  // after a CSS media query (not a prop/data change) shifts it. #speed-control
+  // gets a 3rem left margin in landscape orientation, so mirror it here to
+  // keep the popup aligned above the button row instead of stuck 38px left.
+  @media (orientation: landscape) {
+    margin-left: 3rem;
+  }
 }
 
 #enclosing-playback-container.inset.mobile-playback-control {
