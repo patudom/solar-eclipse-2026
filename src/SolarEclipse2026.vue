@@ -4070,7 +4070,7 @@ export default defineComponent({
         const ew = this.locationDeg.longitudeDeg >= 0 ? 'E' : 'W';
         const lat = Math.abs(this.locationDeg.latitudeDeg).toFixed(3);
         const lon = Math.abs(this.locationDeg.longitudeDeg).toFixed(3);
-        return `${lat}° ${ns}, ${lon}° ${ew}`;
+        return `${lat}° ${ns}\n${lon}° ${ew}`;
       }
     },
 
@@ -6273,6 +6273,10 @@ body {
     .location-status-name {
       font-size: calc(0.95 * var(--default-font-size));
       margin-bottom: 0.25rem;
+      // Lets the "\n" in the plain lat/long fallback (no place name found)
+      // render as an actual line break: latitude on one line, longitude
+      // on the next, instead of one long wrapped/truncated line.
+      white-space: pre-line;
     }
 
     .eclipse-status-line {
