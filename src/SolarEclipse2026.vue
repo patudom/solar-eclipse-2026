@@ -4608,6 +4608,21 @@ export default defineComponent({
   border-radius: .125rem;
 }
 
+// @cosmicds/vue-toolkit's icon-button bakes in its own pre-oreo focus
+// styling: plain (not focus-visible) rules that swap color/border-color
+// to --focus-color and, while active, the box-shadow to --focus-shadow --
+// e.g. one button binds --focus-color to a leftover blue "skyColor",
+// making it flash blue on focus. Neutralize both so the oreo ring above
+// is the only focus indicator icon-wrapper buttons show.
+.icon-wrapper:focus {
+  color: var(--color) !important;
+  border-color: var(--color) !important;
+}
+
+.icon-wrapper.active:focus {
+  box-shadow: 0 0 10px 3px var(--active-shadow) !important;
+}
+
 // Remove oreo focus styling from the Information/User Guide dialog, and
 // from the intro dialog/overlay -- Vuetify focuses .v-overlay__content
 // itself when either opens (for a11y), but that wrapper collapses to
