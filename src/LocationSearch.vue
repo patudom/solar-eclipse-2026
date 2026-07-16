@@ -265,8 +265,13 @@ export default defineComponent({
   
   .forward-geocoding-input > .v-input__control > .v-field {
     border-radius: var(--border-radius);
+    // The solo variant's default elevation shadow extends a few pixels
+    // past the field's own box. The container has no top/bottom padding
+    // around it, so that shadow bled over the container's own border,
+    // making it look discontinuous.
+    box-shadow: none;
   }
-  
+
   .forward-geocoding-input.geocode-success label {
     color: var(--accent-color);
     opacity: 1;
