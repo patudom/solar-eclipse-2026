@@ -10,9 +10,9 @@
       <v-text-field
         v-show="searchOpen"
         v-model="searchText"
-        :class="['forward-geocoding-input', locationJustUpdated ? 'geocode-success' : '', small ? 'forward-geocoding-input-small' : '']"
+        :class="['forward-geocoding-input', small ? 'forward-geocoding-input-small' : '']"
         :label="locationJustUpdated ? 'Location Updated' : 'Enter a location'"
-        bg-color='black'
+        bg-color="transparent"
         density="compact"
         hide-details
         variant="solo"
@@ -185,7 +185,7 @@ export default defineComponent({
         // So the border moves onto the icon itself instead while closed.
         '--container-border': this.searchOpen ? '2px solid var(--accent-color)' : 'none',
         '--search-icon-border': this.searchOpen ? 'none' : '2px solid var(--accent-color)',
-        '--search-icon-background': this.searchOpen ? 'none' : 'rgba(0, 0, 0, 0.7)',
+        '--search-icon-background': 'none',
       };
     },
   },
@@ -281,7 +281,7 @@ export default defineComponent({
     box-shadow: none;
   }
 
-  .forward-geocoding-input.geocode-success label {
+  .forward-geocoding-input label {
     color: var(--accent-color);
     opacity: 1;
   }
