@@ -810,11 +810,23 @@
         <div
           id="controls"
           class="control-icon-wrapper"
+          :class="{ 'controls-panel-open': showControls }"
         >
           <div id="controls-top-row">
+            <font-awesome-icon
+              v-if="showControls"
+              class="controls-chevron"
+              icon="chevron-up"
+              size="lg"
+              :color="accentColor"
+              @click="showControls = false"
+              @keyup.enter="showControls = false"
+              tabindex="0"
+            />
             <icon-button
+              v-else
               v-model="showControls"
-              :fa-icon="showControls ? 'chevron-up' : 'sliders'"
+              fa-icon="sliders"
               fa-size="lg"
               :color="accentColor"
               :focus-color="accentColor"
@@ -4884,15 +4896,23 @@ body {
 }
 
 #controls {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(6px);
-  padding-block: 0.5em;
-  padding-right: 0.5em;
-  border-radius: var(--tight-border-radius);
-  border: solid 1px var(--accent-color);
+  // Closed, this is just the sliders icon-button -- its own icon-wrapper
+  // box is the only visible box. Open, this becomes a real panel holding
+  // the checkboxes, so it gets its own background/border/padding, and the
+  // close chevron is drawn bare (no separate icon-wrapper box) since the
+  // panel border already wraps it.
   display: flex;
   flex-direction: column;
   pointer-events: auto;
+
+  &.controls-panel-open {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    padding-block: 0.5em;
+    padding-right: 0.5em;
+    border-radius: var(--tight-border-radius);
+    border: solid 1px var(--accent-color);
+  }
 
   .v-label {
     color: var(--accent-color);
@@ -4941,7 +4961,6 @@ body {
     }
   }
   #controls-top-row {
-    padding-left: 0.5em;
     display: flex;
     width: 100%;
     flex-direction: row;
@@ -4950,6 +4969,14 @@ body {
     @media (max-width: 599px) {
       justify-content: flex-start;
     }
+  }
+
+  &.controls-panel-open #controls-top-row {
+    padding-left: 0.5em;
+  }
+
+  .controls-chevron {
+    cursor: pointer;
   }
 }
 
@@ -5122,6 +5149,14 @@ body {
   left: 50%;
   transform: translateX(-50%);
   font-size: calc(2.5*var(--default-font-size));
+}
+
+// Vuetify assigns each opened overlay an incrementing z-index, so whichever
+// of the Information dialog / speed control popup was opened more recently
+// would otherwise win. Pin the Information dialog above regardless of
+// open order.
+#text-bottom-sheet {
+  z-index: 9999 !important;
 }
 
 .bottom-sheet {
@@ -6225,7 +6260,7 @@ body {
   // unbolded details underneath.
   #location-status-box {
     pointer-events: auto;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
     color: white;
     border: 2px solid var(--accent-color);
@@ -6370,6 +6405,8 @@ a {
   padding: 0;
   border-radius: var(--normal-border-radius);
   border: 2px solid var(--color);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
 }
 
 
