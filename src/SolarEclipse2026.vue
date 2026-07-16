@@ -218,6 +218,7 @@
         tabindex="0"
         @mousedown="startMapWidthResize"
         @touchstart="startMapWidthResize"
+        @keydown="onMapWidthResizeKeydown"
       ></div>
       <div
         v-if="!smAndUp"
@@ -228,6 +229,7 @@
         tabindex="0"
         @mousedown="startMobileNonMapHeightResize"
         @touchstart="startMobileNonMapHeightResize"
+        @keydown="onMobileNonMapHeightResizeKeydown"
       ></div>
       <div id="map-column">
       <v-hover v-slot="{isHovering, props}">
@@ -317,6 +319,7 @@
       tabindex="0"
       @mousedown="startTopContainerResize"
       @touchstart="startTopContainerResize"
+      @keydown="onTopContainerResizeKeydown"
     ></div>
   </v-container>
   
@@ -3697,6 +3700,28 @@ export default defineComponent({
       window.removeEventListener('blur', this.endTopContainerResize);
     },
 
+    onTopContainerResizeKeydown(event: KeyboardEvent) {
+      const step = 20;
+      let delta = 0;
+      if (event.key === 'ArrowUp') {
+        delta = -step;
+      } else if (event.key === 'ArrowDown') {
+        delta = step;
+      } else {
+        return;
+      }
+      event.preventDefault();
+      const container = document.getElementById('guided-content-container');
+      if (!container) {
+        return;
+      }
+      const currentHeight = container.getBoundingClientRect().height;
+      const minHeight = 150;
+      const maxHeight = window.innerHeight - 100;
+      this.topContainerCustomHeight = Math.min(Math.max(currentHeight + delta, minHeight), maxHeight);
+      this.updateGuidedContentHeight();
+    },
+
     startMapWidthResize(event: MouseEvent | TouchEvent) {
       const nonMapContainer = document.getElementById('non-map-container');
       if (!nonMapContainer) {
@@ -3753,6 +3778,30 @@ export default defineComponent({
       window.removeEventListener('blur', this.endMapWidthResize);
     },
 
+    onMapWidthResizeKeydown(event: KeyboardEvent) {
+      const step = 20;
+      let delta = 0;
+      if (event.key === 'ArrowLeft') {
+        delta = -step;
+      } else if (event.key === 'ArrowRight') {
+        delta = step;
+      } else {
+        return;
+      }
+      event.preventDefault();
+      const nonMapContainer = document.getElementById('non-map-container');
+      const container = document.getElementById('guided-content-container');
+      if (!nonMapContainer || !container) {
+        return;
+      }
+      const currentWidth = nonMapContainer.getBoundingClientRect().width;
+      const containerWidth = container.clientWidth;
+      const minWidth = 150;
+      const maxWidth = containerWidth - 150;
+      const newWidth = Math.min(Math.max(currentWidth + delta, minWidth), maxWidth);
+      this.nonMapContainerWidthPercent = (newWidth / containerWidth) * 100;
+    },
+
     startMobileNonMapHeightResize(event: MouseEvent | TouchEvent) {
       const nonMapContainer = document.getElementById('non-map-container');
       if (!nonMapContainer) {
@@ -3807,6 +3856,30 @@ export default defineComponent({
       window.removeEventListener('touchend', this.endMobileNonMapHeightResize);
       window.removeEventListener('touchcancel', this.endMobileNonMapHeightResize);
       window.removeEventListener('blur', this.endMobileNonMapHeightResize);
+    },
+
+    onMobileNonMapHeightResizeKeydown(event: KeyboardEvent) {
+      const step = 20;
+      let delta = 0;
+      if (event.key === 'ArrowUp') {
+        delta = -step;
+      } else if (event.key === 'ArrowDown') {
+        delta = step;
+      } else {
+        return;
+      }
+      event.preventDefault();
+      const nonMapContainer = document.getElementById('non-map-container');
+      const container = document.getElementById('guided-content-container');
+      if (!nonMapContainer || !container) {
+        return;
+      }
+      const currentHeight = nonMapContainer.getBoundingClientRect().height;
+      const containerHeight = container.clientHeight;
+      const minHeight = 100;
+      const maxHeight = containerHeight - 100;
+      const newHeight = Math.min(Math.max(currentHeight + delta, minHeight), maxHeight);
+      this.nonMapContainerMobileHeightPercent = (newHeight / containerHeight) * 100;
     },
 
     startHorizonMode() {
