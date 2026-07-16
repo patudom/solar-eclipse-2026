@@ -1142,12 +1142,7 @@
       <div id="location-date-display">
         <div
           id="location-status-box"
-          tabindex="0"
           @click="() => {
-            searchOpen = true;
-            learnerPath = 'Location'
-            }"
-          @keyup.enter="() => {
             searchOpen = true;
             learnerPath = 'Location'
             }"
@@ -4615,12 +4610,6 @@ export default defineComponent({
   border-radius: .125rem;
 }
 
-// Reduce focus indicator for text input fields only (they have their own built-in indicators)
-.v-text-field input:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
 // Remove oreo focus styling from the Information/User Guide dialog
 #text-bottom-sheet .v-overlay__content:focus-visible {
   outline: none !important;
@@ -6391,8 +6380,7 @@ body {
       width: 9rem;
     }
 
-    &:hover,
-    &:focus-visible {
+    &:hover {
       border-color: color-mix(in srgb, var(--accent-color) 70%, black);
     }
 
