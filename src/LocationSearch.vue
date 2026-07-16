@@ -191,7 +191,11 @@ export default defineComponent({
         // a background while it's actually showing the input row.
         '--container-background': this.searchOpen ? 'rgba(0, 0, 0, 0.7)' : 'transparent',
         '--search-icon-border': this.searchOpen ? 'none' : '2px solid var(--accent-color)',
-        '--search-icon-background': 'none',
+        // Open, the icon sits inline in the input row (the row/container
+        // itself carries the background) so it should have none of its own.
+        // Closed, it's a standalone button and should look exactly like
+        // every other icon-wrapper button, background included.
+        '--search-icon-background': this.searchOpen ? 'none' : 'rgba(0, 0, 0, 0.7)',
       };
     },
   },
