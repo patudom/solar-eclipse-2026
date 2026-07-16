@@ -196,6 +196,13 @@ export default defineComponent({
         // Closed, it's a standalone button and should look exactly like
         // every other icon-wrapper button, background included.
         '--search-icon-background': this.searchOpen ? 'none' : 'rgba(0, 0, 0, 0.7)',
+        // The global .icon-wrapper rule applies backdrop-filter: blur(6px)
+        // unconditionally. Left on while open, it still blurs/darkens
+        // whatever's behind the icon (the container's own already-blurred
+        // background) even with no background-color of its own -- looking
+        // just like a background. Only keep the blur while closed, to
+        // match the other icon-wrapper buttons.
+        '--search-icon-backdrop-filter': this.searchOpen ? 'none' : 'blur(6px)',
       };
     },
   },
@@ -313,6 +320,7 @@ export default defineComponent({
     --color: var(--accent-color);
     background: var(--search-icon-background);
     border: var(--search-icon-border);
+    backdrop-filter: var(--search-icon-backdrop-filter);
   }
 
   .geocoding-search-icon:hover, #geocoding-close-icon:hover {
