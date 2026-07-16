@@ -6169,16 +6169,21 @@ body {
   position: relative;
   gap: 5px;
 
-  // when small enough we want to cover the controls
+  // Below this width there isn't room for the popup to sit to the right of
+  // the toggle button without overlapping the play/pause row (and blocking
+  // it). Instead, stack the popup above the whole row with a 5px gap.
+  // position:static here (overriding the relative above) lets the popup's
+  // absolute positioning resolve against the play/pause row's own wrapper,
+  // not just this toggle button, so it centers over the full row.
   @media (max-width: 370px) {
-    // position: absolute;
     flex-grow: 0;
+    position: static;
     #enclosing-playback-container.mobile-playback-control {
-      position: fixed;
+      position: absolute;
       width: calc(90% - 1rem);
       left: 50%;
-      --off: calc(50% - 5px);
-      transform: translateX(-50%) translateY(var(--off)) !important;
+      bottom: calc(100% + 5px);
+      transform: translateX(-50%);
     }
   }
 }
