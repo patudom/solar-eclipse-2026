@@ -6259,7 +6259,6 @@ body {
   // dark background, accent-colored border, bold location name with
   // unbolded details underneath.
   #location-status-box {
-    cursor: pointer;
     pointer-events: auto;
     background: black;
     color: white;
