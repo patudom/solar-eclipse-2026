@@ -3707,15 +3707,13 @@ export default defineComponent({
     },
 
     // Positions the eclipse-percent indicator halfway between the top of
-    // the time controls (the speed-control popup's own top edge while
-    // it's open, since the popup then sits above the toolbar and is the
-    // true top of that cluster; the toolbar's own top edge otherwise)
-    // and the vertical middle of the WWT canvas (#main-content).
+    // the time controls (the toolbar's own top edge, with the
+    // speed-control popup closed) and the vertical middle of the WWT
+    // canvas (#main-content). Deliberately not dynamic with the popup's
+    // open/closed state -- always uses the closed-state reference point.
     updateEclipsedIndicatorPosition() {
       const mainContent = document.getElementById('main-content');
-      const timeControlsEl = this.playbackVisible
-        ? document.querySelector('.desktop-playback-control')
-        : document.getElementById('tools');
+      const timeControlsEl = document.getElementById('tools');
       if (!mainContent || !timeControlsEl) {
         return;
       }
@@ -4308,23 +4306,11 @@ export default defineComponent({
 
     // guidedContentHeight changes on every path that can resize
     // #main-content (window resize, dragging the resize handle, toggling
-    // guided content) -- and playbackVisible changes which element counts
-    // as "the top of the time controls". Both should reposition the
-    // eclipse-percent indicator.
+    // guided content) -- should reposition the eclipse-percent indicator.
     guidedContentHeight() {
       this.$nextTick(() => this.updateEclipsedIndicatorPosition());
     },
 
-    playbackVisible() {
-      // Vuetify's connected location-strategy positions the popup itself
-      // asynchronously, a frame or two after Vue's own DOM update --
-      // nextTick alone can still catch the popup at its pre-positioned
-      // (e.g. top: 0) spot, so wait an extra couple of frames too.
-      this.$nextTick(() => {
-        requestAnimationFrame(() => requestAnimationFrame(() => this.updateEclipsedIndicatorPosition()));
-      });
-    },
-    
     showNewMobileUI(narrow: boolean) {
       this.updatePanForMobile();
       // showNewMobileUI is driven by `narrow`, so this fires whenever the
@@ -6509,11 +6495,13 @@ body {
 
 // Styled to match #speed-text. top is set inline (see
 // updateEclipsedIndicatorPosition) -- vertically halfway between the top
-// of the time controls and the middle of the WWT canvas (#main-content,
-// its positioning parent here).
+// of the time controls (popup closed) and the middle of the WWT canvas
+// (#main-content, its positioning parent here). Centered horizontally
+// on that same canvas.
 #eclipse-percent-indicator {
   position: absolute;
-  right: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.5);
   padding-inline: 0.4em;
   padding-block: 0.15em;
