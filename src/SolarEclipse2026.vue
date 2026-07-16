@@ -988,6 +988,7 @@
     <v-overlay
       v-if="showNewMobileUI"
       v-model="inIntro"
+      id="intro-overlay-mobile"
       opacity="1"
       :scrim="false"
       :close-on-content-click="true"
@@ -1038,6 +1039,7 @@
     <v-dialog
       v-if="!showNewMobileUI"
       v-model="inIntro"
+      id="intro-dialog"
       :style="cssVars"
       :scrim="false"
       :persistent="false"
@@ -4606,8 +4608,15 @@ export default defineComponent({
   border-radius: .125rem;
 }
 
-// Remove oreo focus styling from the Information/User Guide dialog
-#text-bottom-sheet .v-overlay__content:focus-visible {
+// Remove oreo focus styling from the Information/User Guide dialog, and
+// from the intro dialog/overlay -- Vuetify focuses .v-overlay__content
+// itself when either opens (for a11y), but that wrapper collapses to
+// near-zero height (its real content is positioned inside it), so the
+// outline rendered a full-width, few-pixels-tall bar instead of framing
+// anything meaningful.
+#text-bottom-sheet .v-overlay__content:focus-visible,
+#intro-dialog .v-overlay__content:focus-visible,
+#intro-overlay-mobile .v-overlay__content:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
