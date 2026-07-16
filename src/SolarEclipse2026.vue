@@ -5399,10 +5399,28 @@ body {
   }
   
   #tabs {
-    width: calc(100% - 3em);
+    // The tab bar sat flush against the card's own top-left corner, which
+    // clips overflow -- leaving the oreo focus ring no room to render.
+    // Inset the bar slightly and lift it above its sibling; there are
+    // only ever these two short tabs, so there's no visual loss.
+    width: calc(100% - 3em - 12px);
+    margin: 12px 0 12px 12px;
     align-self: left;
+    position: relative;
+    z-index: 1;
+    overflow: visible !important;
+
+    // v-tabs' own slide-group scaffolding also clips overflow at the
+    // bar's own height regardless of the overflow property above --
+    // .v-slide-group__container additionally sets `contain: content`,
+    // and paint containment clips descendant painting (the ring)
+    // independent of `overflow`, so it has to be disabled explicitly too.
+    .v-slide-group__container {
+      overflow: visible !important;
+      contain: none !important;
+    }
   }
-  
+
   .v-card-text {
     height: 40vh;
   }
