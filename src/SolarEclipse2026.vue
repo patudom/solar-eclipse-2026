@@ -1371,7 +1371,6 @@
                     @activate="() => {
                       playbackVisible = !playbackVisible;
                     }"
-                    @keydown="onSpeedControlIconKeydown"
                     :fa-icon="playbackVisible ? 'times' : 'gauge-high'"
                     :color="accentColor"
                     :focus-color="accentColor"
@@ -1385,14 +1384,12 @@
                 </template>
                     <playback-control
                     class="desktop-playback-control"
-                      ref="desktopPlaybackControl"
                       v-if="playbackVisible"
                       :model-value="playbackRate"
                       @update:modelValue="(value: number) => {
                         forceRate = false;
                         playbackRate = value;
                       }"
-                      @tab-out="focusSpeedControlIcon"
                       :max-power="3"
                       :max="Math.log10(1000) + 1"
                       :color="accentColor"
@@ -2287,6 +2284,8 @@ export default defineComponent({
       window.addEventListener('resize', this.onResize);
       this.onResize();
     });
+
+    document.addEventListener('keydown', this.onSpeedControlTabKeydown);
 
     this.applyLayoutDefaults(this.narrow);
 
@@ -3199,19 +3198,40 @@ export default defineComponent({
       this.showSplashScreen = false;
     },
 
-    // Tabbing off the close/activator icon (either direction) while the
-    // speed control popup is open would otherwise escape to the rest of
-    // the page; loop it back onto the slider thumb instead, so the two
-    // are the only stops while the popup's open.
-    onSpeedControlIconKeydown(event: KeyboardEvent) {
-      if (this.playbackVisible && event.key === 'Tab') {
-        event.preventDefault();
-        (this.$refs.desktopPlaybackControl as { focusSlider?: () => void } | undefined)?.focusSlider?.();
-      }
+    // While the speed control popup is open, Tab should cycle through
+    // exactly this set, in this order, rather than the page's normal
+    // DOM-based tab order -- which otherwise either escapes the popup
+    // entirely (its slider lives in a teleported dialog, so tabbing off
+    // it wraps around to the very start of the page) or skips over the
+    // popup's slider altogether (it sits outside the toolbar's own
+    // normal DOM position).
+    speedControlTabStops(): HTMLElement[] {
+      const stops = [
+        document.querySelector('.desktop-playback-control .v-slider-thumb'),
+        document.getElementById('play-pause-icon-button'),
+        document.getElementById('backward-speed-button'),
+        document.getElementById('forward-speed-button'),
+        document.getElementById('reverse-speed-button'),
+        document.getElementById('reset-button'),
+        document.getElementById('speed-control-icon-button'),
+        document.querySelector('#slider .v-slider-thumb'),
+      ];
+      return stops.filter((el): el is HTMLElement => el !== null);
     },
 
-    focusSpeedControlIcon() {
-      document.getElementById('speed-control-icon-button')?.focus();
+    onSpeedControlTabKeydown(event: KeyboardEvent) {
+      if (!this.playbackVisible || event.key !== 'Tab') {
+        return;
+      }
+      const stops = this.speedControlTabStops();
+      const currentIndex = stops.indexOf(document.activeElement as HTMLElement);
+      if (currentIndex === -1) {
+        return;
+      }
+      event.preventDefault();
+      const delta = event.shiftKey ? -1 : 1;
+      const nextIndex = (currentIndex + delta + stops.length) % stops.length;
+      stops[nextIndex].focus();
     },
 
     updateWWTLocation() {
