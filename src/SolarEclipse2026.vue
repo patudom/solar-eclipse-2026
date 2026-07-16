@@ -925,7 +925,9 @@
         >
           <div
             id="close-splash-button"
+            tabindex="0"
             @click="closeSplashScreen"
+            @keyup.enter="closeSplashScreen"
             >&times;</div>
           <div id="splash-screen-text">
             <p>See how the </p>
