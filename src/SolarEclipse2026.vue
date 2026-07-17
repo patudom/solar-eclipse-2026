@@ -248,29 +248,41 @@
                 @error="searchErrorMessage = $event"
               >
               </location-search>
+              <icon-button
+                v-if="getMyLocation"
+                id="my-location-overmap"
+                fa-icon="location-crosshairs"
+                fa-size="2xl"
+                :color="myLocationColor"
+                :focus-color="myLocationColor"
+                :box-shadow="false"
+                :tooltip-text="myLocationToolTip"
+                :show-tooltip="!mobile"
+                @update:modelValue="(value: boolean) => {
+                  if(value) {
+                    ($refs.geolocation as any).getLocation();
+                    showMyLocationDialog = true;
+                    learnerPath = 'Location';
+                  }
+                  else {
+                    console.log('geolocation button pressed = false');
+                  }
+
+                }"
+              ></icon-button>
             </div>
             <icon-button
-              v-if="getMyLocation"
-              id="my-location-overmap"
-              fa-icon="location-crosshairs"
-              fa-size="2xl"
-              :color="myLocationColor"
-              :focus-color="myLocationColor"
-              :box-shadow="false"
-              :tooltip-text="myLocationToolTip"
-              :show-tooltip="!mobile"
-              @update:modelValue="(value: boolean) => {
-                if(value) {
-                  ($refs.geolocation as any).getLocation();
-                  showMyLocationDialog = true;
-                  learnerPath = 'Location';
-                }
-                else {
-                  console.log('geolocation button pressed = false');
-                }
-
-              }"
-            ></icon-button>
+              v-if="narrow"
+              id="eclipse-details-overmap"
+              md-icon="sun-clock"
+              md-size="24"
+              :color="accentColor"
+              :focus-color="accentColor"
+              tooltip-text="View eclipse timing details"
+              tooltip-location="start"
+              @activate="() => { showEclipsePredictionSheet = true; }"
+              >
+            </icon-button>
             <!-- :places="places" -->
             <location-selector
               :model-value="locationDeg"
@@ -707,9 +719,10 @@
         <div id="location-date-display">
           <div
             id="location-status-box"
-            :class="{ 'non-interactive': narrow }"
             @click="() => {
               if (narrow) {
+                showGuidedContent = true;
+                onResize();
                 return;
               }
               searchOpen = true;
@@ -942,13 +955,13 @@
         <div class="inst-quad top-left">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
-            Location, Path, <br>&amp; Timing
+            Location,<br> Path, &amp; <br> Timing
           </div>
         </div>
         <div class="inst-quad top-right">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
-            Settings, Info, <br>&amp; Sharing
+            Settings, <br> Info &amp; <br> Sharing
           </div>
         </div>
         <div class="inst-quad bottom-left">
@@ -4276,7 +4289,10 @@ export default defineComponent({
     // (guided content + wide book icon, location search, and controls) instead
     // of inheriting the other mode's state.
     applyLayoutDefaults(narrow: boolean) {
-      this.searchOpen = !narrow;
+      // Search starts open on both mobile and desktop -- there's no close
+      // X on it (closing it back up is a deliberate action, not a default
+      // state), so there's no reason to hide it up front.
+      this.searchOpen = true;
       // Controls panel starts closed on both mobile and desktop now --
       // it opens under the top-right button cluster on demand instead.
       this.showControls = false;
@@ -5003,15 +5019,6 @@ body {
   // unbolded details underneath.
   #location-status-box {
     pointer-events: auto;
-
-    // Belt-and-suspenders alongside the @click guard: this makes the box
-    // truly inert to clicks/taps at the browser level in narrow/mobile
-    // layouts, rather than relying on the handler firing and returning
-    // early -- also drops the hover border-color change below, so there's
-    // no lingering visual hint that it's interactive.
-    &.non-interactive {
-      pointer-events: none;
-    }
 
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
@@ -6205,8 +6212,9 @@ body {
       }
     }
 
-    // "Use my location", bottom-right corner of the small map.
-    #my-location-overmap-button {
+    // Eclipse-timer button, bottom-right corner of the small map
+    // (mobile only -- desktop keeps its own copy in the top-left cluster).
+    #eclipse-details-overmap-button {
       position: absolute;
       z-index: 600;
       bottom: 1rem;
@@ -6307,7 +6315,11 @@ body {
   height: var(--height);
   min-height: max-content;
   padding: 1rem;
-  grid-template-columns: 1fr 1.35fr;
+  // Equal columns now that both quadrants' text wraps to similarly-short
+  // lines -- the old 1.35fr right column (sized for longer text) shifted
+  // that quadrant's content further right, making the close X (centered
+  // on the overall box) look off-center relative to the two quadrants.
+  grid-template-columns: 1fr 1fr;
   grid-template-rows: 0.5fr 0.5fr;
   gap: 1em;
   
