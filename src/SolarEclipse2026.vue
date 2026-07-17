@@ -358,7 +358,7 @@
           @keyup.enter="showInfoSheet = false"
           tabindex="0"
         >
-          <font-awesome-icon icon="xmark" size="xl" :color="accentColor"></font-awesome-icon>
+          <font-awesome-icon icon="xmark" size="xl" :color="accentColor2"></font-awesome-icon>
         </div>
         <v-window v-model="infoTab" id="tab-items" class="no-bottom-border-radius">
           <v-window-item>
@@ -955,16 +955,6 @@
       :style="cssVars"
       >
       <div id="instruction-overlay">
-        <div id="overlay-close">
-          <font-awesome-icon
-            class="overlay-close-icon"
-            icon="xmark"
-            :color="accentColor"
-            @click="inIntro = !inIntro"
-            @keyup.enter="inIntro = !inIntro"
-            tabindex="0"
-          ></font-awesome-icon>
-        </div>
         <div class="inst-quad top-left">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
@@ -1007,18 +997,18 @@
       <div v-if="inIntro" id="introduction-overlay" class="elevation-10">
         <v-window v-model="introSlide">
           <template v-slot:additional>
-            <div id="intro-window-close-button">
-            <font-awesome-icon
-              size="xl"
-              class="ma-1"
-              :color="accentColor"
-              icon='xmark'
+            <div
+              class="dialog-close-button"
               @click="inIntro = !inIntro"
               @keyup.enter="inIntro = !inIntro"
               tabindex="0"
-              tooltip-location="start"
-            />
-          </div>
+            >
+              <font-awesome-icon
+                size="xl"
+                :color="accentColor2"
+                icon='xmark'
+              />
+            </div>
           </template>
           <v-window-item :value="1">
             <div class="intro-text">
@@ -1191,7 +1181,7 @@
               @keyup.enter="showForecastSheet = false"
               tabindex="0"
             >
-              <font-awesome-icon icon="square-xmark" size="xl"></font-awesome-icon>
+              <font-awesome-icon icon="xmark" size="xl" :color="accentColor2"></font-awesome-icon>
             </div>
             <open-meteo-forecast
               :location="locationDeg"
@@ -1216,7 +1206,7 @@
               @keyup.enter="showEclipsePredictionSheet = false"
               tabindex="0"
             >
-              <font-awesome-icon icon="xmark" size="xl" :color="accentColor"></font-awesome-icon>
+              <font-awesome-icon icon="xmark" size="xl" :color="accentColor2"></font-awesome-icon>
             </div>
             <eclipse-timer show-timer :prediction="eclipsePrediction" :timezone="selectedTimezone" :color="accentColor" :location="selectedLocationText"/>
           </v-card-text>
@@ -2050,6 +2040,10 @@ export default defineComponent({
       nowOutsideTimeRange: false,
       
       accentColor: "#eac402",
+      // Lighter variant of the CosmicDS logo blue -- used for links and,
+      // to keep them visually distinct from the app's primary yellow
+      // accent, every "x to close" button.
+      accentColor2: "#7996DA",
       moonColor: "#CFD8DC",
       normalBorderRadius: "10px",
       tightBorderRadius: "5px",
@@ -2500,6 +2494,7 @@ export default defineComponent({
     cssVars() {
       return {
         '--accent-color': this.accentColor,
+        '--accent-color-2': this.accentColor2,
         '--sky-color': this.skyColorLight,
         '--app-content-height': this.showInfoSheet ? '100%' : '100%',
         '--top-content-height': this.showGuidedContent? this.guidedContentHeight : this.guidedContentHeight,
@@ -5390,7 +5385,7 @@ body {
     position: absolute;
     top: 0.5rem;
     right: 1.75rem;
-    color: var(--accent-color);
+    color: var(--accent-color-2);
     font-size: min(8vw, 5vh);
     // Sized in em (not just the "x" glyph's own, narrower-than-tall advance
     // width/line-height) so the box -- and its keyboard focus outline --
@@ -5446,30 +5441,6 @@ body {
   }
 }
 
-#overlay-close {
-  position: absolute;
-  top: 2%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 15;
-  font-size: calc(1.5 * var(--default-font-size));
-  display: flex;
-  flex-direction: column;
-  color: #888888;
-
-
-}
-
-
-.overlay-close-icon {
-  z-index: 15;
-  // #overlay-close (the icon's own parent) already centers itself with
-  // left: 50%; transform: translateX(-50%) -- transform applies to
-  // static-positioned elements too (unlike left/top), so this same rule
-  // repeated here doubled up, shifting the icon a further 12px left of
-  // where the already-centered parent box put it.
-  font-size: calc(2.5*var(--default-font-size));
-}
 
 // Vuetify assigns each opened overlay an incrementing z-index, so whichever
 // of the Information dialog / speed control popup was opened more recently
@@ -6373,16 +6344,6 @@ body {
   width: 1.5em;
 }
 
-#intro-window-close-button {
-    position: absolute;
-    top: 0.25em;
-    right: 0.25em;
-
-    &:hover {
-      cursor: pointer;
-    }
-}
-
 #instruction-overlay {
   
   --width: 80dvw;
@@ -6796,7 +6757,7 @@ body {
 a {
     text-decoration: none;
     font-weight: bold;
-    color: #7996DA; // lighter variant of CosmicDS logo blue
+    color: var(--accent-color-2);
     pointer-events: auto;
   }
 
