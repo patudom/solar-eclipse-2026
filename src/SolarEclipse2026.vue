@@ -856,16 +856,16 @@
             />
             <v-checkbox
               :color="accentColor"
-              v-model="showAltAzGrid"
-              @keyup.enter="showAltAzGrid = !showAltAzGrid"
-              label="Sky Grid"
+              v-model="showHorizon"
+              @keyup.enter="showHorizon = !showHorizon"
+              label="Horizon / Sky"
               hide-details
             />
             <v-checkbox
               :color="accentColor"
-              v-model="showHorizon"
-              @keyup.enter="showHorizon = !showHorizon"
-              label="Horizon/Daytime Sky"
+              v-model="showAltAzGrid"
+              @keyup.enter="showAltAzGrid = !showAltAzGrid"
+              label="Sky Grid"
               hide-details
             />
             <v-checkbox
@@ -2339,7 +2339,7 @@ export default defineComponent({
         }
         const maxCoverage = this.eclipsePrediction.coverage[0];
         if (maxCoverage) {
-          return `Partial Eclipse\n(Max amount eclipsed: ${Math.round(maxCoverage * 100)}%)`;
+          return `Partial Eclipse\n(Max: ${Math.round(maxCoverage * 100)}%)`;
         }
         return "Partial Eclipse";
       }
