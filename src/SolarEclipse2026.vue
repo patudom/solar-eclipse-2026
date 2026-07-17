@@ -3710,16 +3710,19 @@ export default defineComponent({
     // Positions the eclipse-percent indicator relative to the top of the
     // time controls (the toolbar's own top edge, with the speed-control
     // popup closed -- deliberately not dynamic with the popup's
-    // open/closed state) and the WWT canvas (#main-content).
+    // open/closed state) and the WWT canvas (#main-content). Which of the
+    // two layouts below applies depends on the canvas's own form factor
+    // (its own width vs height), not the window's -- #main-content
+    // doesn't necessarily share the window's aspect ratio (e.g. the
+    // guided-content box eats into its effective shape).
     //
-    // On a wide (landscape) screen: vertically centered on the canvas,
-    // with its horizontal center 25% of the screen's width in from the
-    // right edge.
+    // Canvas wider than tall: vertically centered on the canvas, with its
+    // horizontal center 25% of the canvas's width in from the right edge.
     //
-    // On a vertical (portrait) screen: horizontally centered, 40% of the
-    // way from the toolbar's top edge towards the canvas's vertical
-    // middle (i.e. closer to the toolbar than the exact midpoint --
-    // measuring the 40% from the toolbar side, not the canvas side).
+    // Canvas taller than wide: horizontally centered, 40% of the way from
+    // the toolbar's top edge towards the canvas's vertical middle (i.e.
+    // closer to the toolbar than the exact midpoint -- measuring the 40%
+    // from the toolbar side, not the canvas side).
     updateEclipsedIndicatorPosition() {
       const mainContent = document.getElementById('main-content');
       const timeControlsEl = document.getElementById('tools');
@@ -3729,9 +3732,9 @@ export default defineComponent({
       const mainRect = mainContent.getBoundingClientRect();
       const controlsTop = timeControlsEl.getBoundingClientRect().top;
       const canvasMiddle = mainRect.top + mainRect.height / 2;
-      const isWideScreen = window.innerWidth > window.innerHeight;
+      const isCanvasWide = mainRect.width > mainRect.height;
 
-      if (isWideScreen) {
+      if (isCanvasWide) {
         this.eclipsedIndicatorTop = canvasMiddle - mainRect.top;
         this.eclipsedIndicatorLeft = mainRect.width * 0.75;
       } else {
