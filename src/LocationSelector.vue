@@ -665,6 +665,22 @@ export default defineComponent({
     display: none;
   }
 
+  // @cosmicds/vue-toolkit's bundled vendor chunk carries its own stale,
+  // internal copy of this exact CSS (an older revision of this file,
+  // also rooted at .map-container -- a generic enough class name that
+  // it collides directly with ours). Since the toolkit ships as one
+  // eager UMD bundle, importing ANY of its components for unrelated
+  // reasons (icon-button, geolocation-button, etc.) evaluates that
+  // whole bundle and injects its <style> tags regardless -- including
+  // its old .map-container .leaflet-bottom.leaflet-right::before rule,
+  // which still renders "Credit: © Leaflet.js" in the map's bottom-right
+  // corner even though our own copy of this rule moved to top-right.
+  // Can't fix the vendored copy (it's in node_modules), so explicitly
+  // neutralize it here instead.
+  .leaflet-bottom.leaflet-right::before {
+    content: none !important;
+  }
+
   path.leaflet-interactive:focus {
     outline: none;
   }
