@@ -234,20 +234,18 @@
                  and "use my location" controls live over the small map on
                  both, rather than desktop having its own separate copies
                  floating over the WWT canvas. -->
-            <div
-              class="map-search-stack"
-              :class="[learnerPath === 'Clouds' ? 'overmap-budge' : '', showNewMobileUI ? '' : 'overmap-low']"
+            <location-search
+              class="map-search-bottomleft"
+              v-model="searchOpen"
+              small
+              buttonSize="xl"
+              :search-provider="geocodingInfoForSearch"
+              :accentColor="accentColor"
+              @set-location="setLocationFromSearchFeature"
+              @error="searchErrorMessage = $event"
             >
-              <location-search
-                v-model="searchOpen"
-                small
-                buttonSize="xl"
-                :search-provider="geocodingInfoForSearch"
-                :accentColor="accentColor"
-                @set-location="setLocationFromSearchFeature"
-                @error="searchErrorMessage = $event"
-              >
-              </location-search>
+            </location-search>
+            <div class="map-bottomright-stack">
               <icon-button
                 v-if="getMyLocation"
                 id="my-location-overmap"
@@ -268,6 +266,22 @@
                     console.log('geolocation button pressed = false');
                   }
 
+                }"
+              ></icon-button>
+              <icon-button
+                v-if="narrow"
+                id="reset-location-overmap"
+                fa-icon="house"
+                fa-size="2xl"
+                :color="accentColor"
+                :focus-color="accentColor"
+                :box-shadow="false"
+                tooltip-text="Reset to Antiguita, Spain"
+                tooltip-location="start"
+                @activate="() => {
+                  location = defaultLocation;
+                  selectedLocationText = defaultLocationText;
+                  learnerPath = 'Location';
                 }"
               ></icon-button>
             </div>
@@ -6193,32 +6207,37 @@ body {
     justify-content: center;
 
 
-    .map-search-stack {
+    // Small, consistent margin from the small map's own edges for all
+    // three overlay buttons below.
+    --map-overlay-margin: 0.5em;
+
+    .map-search-bottomleft {
       position: absolute;
       z-index: 600;
-      right: 1.25em;
-      top: 1em;
+      bottom: var(--map-overlay-margin);
+      left: var(--map-overlay-margin);
+    }
+
+    // "Use my location" + "reset to Antiguita, Spain" (mobile only, below
+    // it), stacked in the bottom-right corner of the small map.
+    .map-bottomright-stack {
+      position: absolute;
+      z-index: 600;
+      bottom: var(--map-overlay-margin);
+      right: var(--map-overlay-margin);
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 5px;
-
-      &.overmap-low {
-        top: 2em;
-      }
-
-      &.overmap-budge {
-        right: 4.5em;
-      }
     }
 
-    // Eclipse-timer button, bottom-right corner of the small map
+    // Eclipse-timer button, top-right corner of the small map
     // (mobile only -- desktop keeps its own copy in the top-left cluster).
     #eclipse-details-overmap-button {
       position: absolute;
       z-index: 600;
-      bottom: 1rem;
-      right: 1.25em;
+      top: var(--map-overlay-margin);
+      right: var(--map-overlay-margin);
     }
 
     .map-container {
