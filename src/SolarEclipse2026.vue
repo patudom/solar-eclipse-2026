@@ -5245,11 +5245,12 @@ body {
     color: var(--accent-color);
     opacity: 1;
     font-size: var(--default-font-size);
+    padding-left: 0.5rem;
   }
 
   .v-checkbox .v-selection-control {
     font-size: calc(1.1 * var(--default-font-size));
-    height: calc(1.2 * var(--default-line-height));
+    height: calc(1.5 * var(--default-line-height));
     min-height: calc(1.2 * var(--default-line-height));
   }
 
@@ -6468,8 +6469,10 @@ body {
     grid-area: 1 / 1 / 2 / 2;
     margin-bottom: auto;
     .the-arrow {
-      // flip right to left
-      transform: translateY(-5px) rotateZ(-90deg);
+      // Mirror image of top-right's rotateZ(30deg) -- same angle off
+      // vertical, opposite direction, so it points diagonally toward
+      // this quadrant's own top-left corner instead of straight left.
+      transform: translateY(-5px) rotateZ(-30deg);
     }
   }
   
