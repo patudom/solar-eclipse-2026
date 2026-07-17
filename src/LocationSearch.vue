@@ -27,30 +27,8 @@
       <div
         class="icon-wrapper geocoding-search-icon"
         tabindex="0"
-        @click="() => {
-          if (searchOpen) {
-            if (stayOpen) {
-              performForwardGeocodingSearch();
-            } else {
-              searchOpen = false;
-              clearSearchData();
-            }
-          } else {
-            searchOpen = true;
-          }
-        }"
-        @keyup.enter="() => {
-          if (searchOpen) {
-            if (stayOpen) {
-              performForwardGeocodingSearch();
-            } else {
-              searchOpen = false;
-              clearSearchData();
-            }
-          } else {
-            searchOpen = true;
-          }
-        }"
+        @click="activateSearchIcon"
+        @keyup.enter="activateSearchIcon"
       >
         <font-awesome-icon
           icon="magnifying-glass"
@@ -241,6 +219,23 @@ export default defineComponent({
   
   
   methods: {
+    // The magnifying-glass icon: opens the box when closed. When open,
+    // it submits a search if there's text to search for (typing then
+    // tabbing/clicking the icon should search, not close) -- otherwise,
+    // with nothing typed, it closes the box instead.
+    activateSearchIcon() {
+      if (this.searchOpen) {
+        if (this.stayOpen || (this.searchText && this.searchText.length > 0)) {
+          this.performForwardGeocodingSearch();
+        } else {
+          this.searchOpen = false;
+          this.clearSearchData();
+        }
+      } else {
+        this.searchOpen = true;
+      }
+    },
+
     performForwardGeocodingSearch() {
       if (this.searchText === null || this.searchText.length < 3) {
         return;
