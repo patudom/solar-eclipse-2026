@@ -241,6 +241,8 @@
               buttonSize="xl"
               :search-provider="geocodingInfoForSearch"
               :accentColor="accentColor"
+              :open-upward="narrow"
+              :escape-container="!narrow"
               @set-location="setLocationFromSearchFeature"
               @error="searchErrorMessage = $event"
             >

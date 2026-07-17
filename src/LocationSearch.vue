@@ -2,6 +2,7 @@
 <template>
   <div
     class="forward-geocoding-container"
+    ref="container"
     :style="cssStyles"
   >
     <div
@@ -62,24 +63,27 @@
 
     </div>
     
-    <div
-      class="forward-geocoding-results"
-      :class="[small ? 'results-small' : '']"
-      v-if="searchResults !== null"
-    >
+    <Teleport to="body" :disabled="!escapeContainer">
       <div
-        v-for="(feature, index) in (searchResults !== null ?  searchResults.features : [])"
-        class="forward-geocoding-result"
-        :key="index"
-        tabindex="0"
-        @click="() => setLocationFromSearchFeature(feature)"
-        @keyup.enter="() => setLocationFromSearchFeature(feature)"
+        class="forward-geocoding-results"
+        :class="[small ? 'results-small' : '', openUpward ? 'results-up' : '']"
+        :style="escapeContainer ? { ...cssStyles, ...escapedResultsStyle } : null"
+        v-if="searchResults !== null"
       >
-        {{ feature.place_name }}
+        <div
+          v-for="(feature, index) in (searchResults !== null ?  searchResults.features : [])"
+          class="forward-geocoding-result"
+          :key="index"
+          tabindex="0"
+          @click="() => setLocationFromSearchFeature(feature)"
+          @keyup.enter="() => setLocationFromSearchFeature(feature)"
+        >
+          {{ feature.place_name }}
+        </div>
       </div>
-    </div>
+    </Teleport>
   </div>
-</template> 
+</template>
 
 
 
@@ -159,10 +163,29 @@ export default defineComponent({
       type: String,
       default: '1x',
     },
-    
+
+    // Opens the results dropdown upward (above the input) instead of
+    // downward -- for when the search box sits near the bottom of its
+    // own container/screen, where a downward dropdown would get clipped.
+    openUpward: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Teleports the results dropdown to <body> and positions it with
+    // `position: fixed`, computed from the container's own on-screen
+    // rect -- for when the search box sits inside a container that
+    // clips overflow (e.g. a scrollable panel), so the dropdown can
+    // still render below/outside that container instead of being cut
+    // off by it.
+    escapeContainer: {
+      type: Boolean,
+      default: false,
+    },
+
   },
-  
-  
+
+
   data() {
     return {
       searchOpen: this.modelValue || this.stayOpen,
@@ -170,6 +193,7 @@ export default defineComponent({
       searchResults: null as MapBoxFeatureCollection | null,
       searchErrorMessage: null as string | null,
       locationJustUpdated: false,
+      escapedResultsStyle: {} as Record<string, string>,
     };
   },
   
@@ -251,10 +275,42 @@ export default defineComponent({
         this.locationJustUpdated = false;
       }, 5000);
     },
+
+    updateEscapedResultsPosition() {
+      if (!this.escapeContainer) {
+        return;
+      }
+      const el = this.$refs.container as HTMLElement | undefined;
+      if (!el) {
+        return;
+      }
+      const rect = el.getBoundingClientRect();
+      this.escapedResultsStyle = {
+        position: 'fixed',
+        top: `${rect.bottom}px`,
+        left: `${rect.left}px`,
+        width: `${rect.width}px`,
+        zIndex: '900',
+      };
+    },
   },
-  
+
+  mounted() {
+    window.addEventListener('resize', this.updateEscapedResultsPosition);
+  },
+
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateEscapedResultsPosition);
+  },
+
   watch: {
-    
+
+    searchResults(value: MapBoxFeatureCollection | null) {
+      if (value !== null) {
+        this.$nextTick(() => this.updateEscapedResultsPosition());
+      }
+    },
+
     modelValue(value: boolean) {
       this.searchOpen = value;
     },
@@ -358,6 +414,23 @@ export default defineComponent({
       top: 37px;
       width: calc(100% + 4px);
       left: -2px;
+    }
+
+    // Opens above the input instead of below -- for a search box sitting
+    // near the bottom of its own container/screen.
+    &.results-up {
+      top: auto;
+      bottom: 42px;
+      border-top: 2px solid var(--accent-color);
+      border-bottom: 0px;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-top-left-radius: var(--tight-border-radius, 5px);
+      border-top-right-radius: var(--tight-border-radius, 5px);
+
+      &.results-small {
+        bottom: 37px;
+      }
     }
 
     .forward-geocoding-result {
