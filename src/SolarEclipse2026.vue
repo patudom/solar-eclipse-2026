@@ -245,34 +245,44 @@
               @error="searchErrorMessage = $event"
             >
             </location-search>
-            <div class="map-bottomright-stack">
-              <icon-button
-                v-if="getMyLocation"
-                id="my-location-overmap"
-                fa-icon="location-crosshairs"
-                fa-size="2xl"
-                :color="myLocationColor"
-                :focus-color="myLocationColor"
-                :box-shadow="false"
-                :tooltip-text="myLocationToolTip"
-                :show-tooltip="!mobile"
-                @update:modelValue="(value: boolean) => {
-                  if(value) {
-                    ($refs.geolocation as any).getLocation();
-                    showMyLocationDialog = true;
-                    learnerPath = 'Location';
-                  }
-                  else {
-                    console.log('geolocation button pressed = false');
-                  }
+            <icon-button
+              v-if="getMyLocation"
+              id="my-location-overmap"
+              fa-icon="location-crosshairs"
+              fa-size="2xl"
+              :color="myLocationColor"
+              :focus-color="myLocationColor"
+              :box-shadow="false"
+              :tooltip-text="myLocationToolTip"
+              :show-tooltip="!mobile"
+              @update:modelValue="(value: boolean) => {
+                if(value) {
+                  ($refs.geolocation as any).getLocation();
+                  showMyLocationDialog = true;
+                  learnerPath = 'Location';
+                }
+                else {
+                  console.log('geolocation button pressed = false');
+                }
 
-                }"
-              ></icon-button>
+              }"
+            ></icon-button>
+            <div v-if="narrow" class="map-topright-stack">
               <icon-button
-                v-if="narrow"
+                id="eclipse-details-overmap"
+                md-icon="sun-clock"
+                md-size="24"
+                :color="accentColor"
+                :focus-color="accentColor"
+                tooltip-text="View eclipse timing details"
+                tooltip-location="start"
+                @activate="() => { showEclipsePredictionSheet = true; }"
+                >
+              </icon-button>
+              <icon-button
                 id="reset-location-overmap"
                 fa-icon="house"
-                fa-size="2xl"
+                fa-size="lg"
                 :color="accentColor"
                 :focus-color="accentColor"
                 :box-shadow="false"
@@ -285,18 +295,6 @@
                 }"
               ></icon-button>
             </div>
-            <icon-button
-              v-if="narrow"
-              id="eclipse-details-overmap"
-              md-icon="sun-clock"
-              md-size="24"
-              :color="accentColor"
-              :focus-color="accentColor"
-              tooltip-text="View eclipse timing details"
-              tooltip-location="start"
-              @activate="() => { showEclipsePredictionSheet = true; }"
-              >
-            </icon-button>
             <!-- :places="places" -->
             <location-selector
               :model-value="locationDeg"
@@ -6207,37 +6205,43 @@ body {
     justify-content: center;
 
 
-    // Small, consistent margin from the small map's own edges for all
-    // three overlay buttons below.
+    // Small, consistent margin from the small map's own edges for the
+    // overlay buttons below.
     --map-overlay-margin: 0.5em;
+    // Leaflet's own always-visible "Credit: © Leaflet.js" label sits
+    // flush in the map's bottom-right corner (see LocationSelector.vue's
+    // .leaflet-bottom.leaflet-right::before) -- bottom-anchored buttons
+    // need more clearance than the horizontal/top margin to avoid
+    // sitting on top of it.
+    --map-overlay-bottom-margin: 1.75em;
 
     .map-search-bottomleft {
       position: absolute;
       z-index: 600;
-      bottom: var(--map-overlay-margin);
+      bottom: var(--map-overlay-bottom-margin);
       left: var(--map-overlay-margin);
     }
 
-    // "Use my location" + "reset to Antiguita, Spain" (mobile only, below
-    // it), stacked in the bottom-right corner of the small map.
-    .map-bottomright-stack {
+    // "Use my location", bottom-right corner of the small map.
+    #my-location-overmap-button {
       position: absolute;
       z-index: 600;
-      bottom: var(--map-overlay-margin);
+      bottom: var(--map-overlay-bottom-margin);
+      right: var(--map-overlay-margin);
+    }
+
+    // Eclipse-timer button + "reset to Antiguita, Spain" (below it),
+    // stacked in the top-right corner of the small map (mobile only --
+    // desktop keeps its own eclipse-timer copy in the top-left cluster).
+    .map-topright-stack {
+      position: absolute;
+      z-index: 600;
+      top: var(--map-overlay-margin);
       right: var(--map-overlay-margin);
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 5px;
-    }
-
-    // Eclipse-timer button, top-right corner of the small map
-    // (mobile only -- desktop keeps its own copy in the top-left cluster).
-    #eclipse-details-overmap-button {
-      position: absolute;
-      z-index: 600;
-      top: var(--map-overlay-margin);
-      right: var(--map-overlay-margin);
     }
 
     .map-container {
