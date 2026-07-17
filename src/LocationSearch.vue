@@ -293,14 +293,47 @@ export default defineComponent({
         zIndex: '900',
       };
     },
+
+    // While results are showing, Tab should cycle between the input box
+    // and each result -- not escape to the rest of the page. The results
+    // themselves are queried by class rather than scoped under this
+    // component's own root, since escapeContainer teleports them to
+    // <body> (there's only ever one location-search instance active at
+    // a time in this app).
+    locationSearchTabStops(): HTMLElement[] {
+      const container = this.$refs.container as HTMLElement | undefined;
+      const input = container?.querySelector('.forward-geocoding-input input') as HTMLElement | null ?? null;
+      const results = Array.from(document.querySelectorAll('.forward-geocoding-result')) as HTMLElement[];
+      return [input, ...results].filter((el): el is HTMLElement => el !== null);
+    },
+
+    onLocationSearchTabKeydown(event: KeyboardEvent) {
+      if (this.searchResults === null || event.key !== 'Tab') {
+        return;
+      }
+      const stops = this.locationSearchTabStops();
+      const currentIndex = stops.indexOf(document.activeElement as HTMLElement);
+      if (currentIndex === -1) {
+        return;
+      }
+      event.preventDefault();
+      const delta = event.shiftKey ? -1 : 1;
+      const nextIndex = (currentIndex + delta + stops.length) % stops.length;
+      stops[nextIndex].focus();
+    },
   },
 
   mounted() {
     window.addEventListener('resize', this.updateEscapedResultsPosition);
+    // Capture phase: the search input has @keydown.stop, which would
+    // otherwise stop a normal (bubble-phase) document listener from ever
+    // seeing Tab presses that originate there.
+    document.addEventListener('keydown', this.onLocationSearchTabKeydown, true);
   },
 
   beforeUnmount() {
     window.removeEventListener('resize', this.updateEscapedResultsPosition);
+    document.removeEventListener('keydown', this.onLocationSearchTabKeydown, true);
   },
 
   watch: {

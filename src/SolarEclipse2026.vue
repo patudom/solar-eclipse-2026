@@ -6232,10 +6232,15 @@ body {
     // Eclipse-timer button + "reset to Antiguita, Spain" (below it),
     // stacked in the top-right corner of the small map (mobile only --
     // desktop keeps its own eclipse-timer copy in the top-left cluster).
+    // Leaflet's own attribution control now also lives in that same
+    // top-right corner (see LocationSelector.vue's
+    // map.attributionControl.setPosition('topright')) -- clear its
+    // "Credit: © Leaflet.js" label by the same small margin instead of
+    // sitting flush against the map's top edge.
     .map-topright-stack {
       position: absolute;
       z-index: 600;
-      top: var(--map-overlay-margin);
+      top: calc(1em + var(--map-overlay-margin));
       right: var(--map-overlay-margin);
       display: flex;
       flex-direction: column;
