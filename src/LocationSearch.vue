@@ -28,14 +28,24 @@
         tabindex="0"
         @click="() => {
           if (searchOpen) {
-            performForwardGeocodingSearch();
+            if (stayOpen) {
+              performForwardGeocodingSearch();
+            } else {
+              searchOpen = false;
+              clearSearchData();
+            }
           } else {
             searchOpen = true;
           }
         }"
         @keyup.enter="() => {
           if (searchOpen) {
-            performForwardGeocodingSearch();
+            if (stayOpen) {
+              performForwardGeocodingSearch();
+            } else {
+              searchOpen = false;
+              clearSearchData();
+            }
           } else {
             searchOpen = true;
           }
@@ -47,26 +57,9 @@
           :color="!searchOpen || (searchText && searchText.length > 2) ? accentColor : 'gray'"
         ></font-awesome-icon>
       </div>
-      
+
       <slot name="append-icon" class="geocode-icon"></slot>
-      
-      <font-awesome-icon
-        class="geocoding-close-icon"
-        v-show="searchOpen && !stayOpen"
-        icon="xmark"
-        :size="searchOpen ? 'xl' : '1x'"
-        :color="accentColor"
-        tabindex="0"
-        @click="() => {
-          searchOpen = false;
-          clearSearchData();
-        }"
-        @keyup.enter="() => {
-          searchOpen = false;
-          clearSearchData();
-        }"
-      ></font-awesome-icon>
-      
+
     </div>
     
     <div
