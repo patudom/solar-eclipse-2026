@@ -170,9 +170,9 @@
           <!-- <v-col> -->
             <div id="top-container-buttons">
               <icon-button
-                :model-value="learnerPath == 'Location'" 
-                fa-icon="location-dot"
-                fa-size="xl"
+                :model-value="learnerPath == 'Location'"
+                md-icon="map-search"
+                md-size="24"
                 :color="accentColor"
                 :focus-color="accentColor"
                 :tooltip-text="'Choose any viewing location'"
@@ -1067,7 +1067,7 @@
               <ul>
                 <v-list-item density="compact">
                   <template v-slot:prepend>
-                    <font-awesome-icon icon="location-dot" size="xl" class="bullet-icon"></font-awesome-icon>
+                    <v-icon icon="mdi-map-search" size="xl" class="bullet-icon"></v-icon>
                   </template>
                     <strong>Select any location</strong> around the world. See and share how the eclipse would look from there.
                 </v-list-item>
@@ -6311,13 +6311,26 @@ body {
       border-radius: var(--tight-border-radius);
       padding: 0.35em 0.5em;
       font-size: calc(0.8 * var(--default-font-size));
-      max-width: 60vw;
+      // Same fixed width as #location-status-box (the WWT-canvas
+      // version of this box), so it doesn't grow/shrink with the
+      // length of the location name.
+      width: 10rem;
+      max-width: 70vw;
+
+      @media (max-width: 600px) {
+        width: 9rem;
+      }
 
       .location-status-name {
         font-size: calc(0.9 * var(--default-font-size));
+        // Lets the "\n" in the plain lat/long fallback (no place name
+        // found) render as an actual line break: latitude on one line,
+        // longitude on the next.
+        white-space: pre-line;
       }
 
       .eclipse-status-line {
+        text-align: center;
         // Lets the "\n" before "(Xm Ys of totality)" in the computed
         // text actually render as a line break, same as the top-left
         // cluster's own copy of this text.
