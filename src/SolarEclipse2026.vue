@@ -1200,6 +1200,7 @@
         :max-width="xSmallSize ? '85%' : '45%'"
         transition="slide-y-transition"
         id="weather-forecast-sheet"
+        :style="cssVars"
         >
       <v-card>
           <v-card-text class="pb-8">
@@ -1225,6 +1226,7 @@
         :max-width="xSmallSize ? '95%' : 'fit-content'"
         transition="slide-y-transition"
         id="eclipse-prediction-sheet"
+        :style="cssVars"
         >
         <v-card>
           <v-card-text>
@@ -5595,6 +5597,9 @@ body {
     width: 100%;
 
     align-self: center;
+    // Thin border all around, then the thicker dark accent stripe
+    // specifically along the bottom edge overrides just that one side.
+    border: 1px solid var(--accent-color-2);
     border-bottom: solid #212121 0.5em;
   }
 
@@ -5726,6 +5731,10 @@ body {
 }
 
 #eclipse-prediction-sheet {
+  .v-card {
+    border: 1px solid var(--accent-color-2);
+  }
+
   @media (max-width: 350px) {
     .v-card-text {
       padding-inline: 12px;
