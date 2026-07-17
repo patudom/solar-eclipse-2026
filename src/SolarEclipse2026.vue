@@ -292,7 +292,7 @@
     </div>
   </v-container>
     <div
-      v-show="showGuidedContent"
+      v-show="showGuidedContent && !narrow"
       id="top-container-resize-handle"
       role="separator"
       aria-orientation="horizontal"
@@ -2475,7 +2475,14 @@ export default defineComponent({
       };
     },
     topContainerStyle() {
-      if (this.topContainerCustomHeight === null) {
+      // On mobile the guided-content box is always a full-screen overlay
+      // (see .mobile-fullscreen) -- a custom height dragged in from a
+      // previous desktop session (or an earlier drag of the outer resize
+      // handle) would otherwise pin it to a stale, much shorter height via
+      // this inline style, which outranks the CSS 100% override and left
+      // a visible gap between the box's bottom border and the true bottom
+      // of the screen.
+      if (this.narrow || this.topContainerCustomHeight === null) {
         return {};
       }
       const height = `${this.topContainerCustomHeight}px`;
@@ -4959,7 +4966,10 @@ body {
     left: 0.5rem;
 
     @media (max-width: 599px) {
-      top: 4.8rem;
+      // No standalone Map & Weather button to clear on mobile (it's
+      // hidden there -- see #closed-top-container) -- align with the
+      // top-right button cluster's own closed-state offset instead.
+      top: calc(var(--default-font-size) + 1px);
     }
 
     @media (min-width: 600px) {
