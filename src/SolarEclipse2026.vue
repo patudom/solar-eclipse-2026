@@ -28,7 +28,7 @@
     </template>
   </icon-button>
   </div>
-  <div id="guided-content-wrapper">
+  <div id="guided-content-wrapper" :class="{ 'mobile-fullscreen': narrow && showGuidedContent }">
   <v-container
     id="guided-content-container"
     v-show="showGuidedContent"
@@ -5751,6 +5751,30 @@ body {
   // outer edge of its margin.
   --margin: 0.5rem;
   position: relative;
+
+  // On mobile, while open, becomes a full-screen overlay covering the
+  // WWT canvas and all its floating buttons. This is also what fixes the
+  // map appearing blank on mobile: #map-column's flex-grow only has
+  // real remaining space to grow into once this wrapper (and, via the
+  // 100% overrides below, #guided-content-container itself) has a
+  // genuinely definite height -- the container's own calc(100% - 1rem)
+  // needs a definite-height ancestor to resolve against, and one was
+  // never available before (the wrapper had no explicit height either).
+  @media (max-width: 600px) {
+    &.mobile-fullscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 700;
+
+      #guided-content-container {
+        margin: 0;
+        width: 100%;
+        --top-content-max-height: 100%;
+        --top-content-min-height: 100%;
+        border-radius: 0;
+      }
+    }
+  }
 }
 
 #guided-content-container {
@@ -6108,14 +6132,30 @@ body {
   // outline: 1px solid red;
 
   #map-container {
-    height: 100%;
+    // #map-column is itself a column flex container, and its own height
+    // only counts as "definite" for a percentage-height child like this
+    // one when it was resolved via align-self/items: stretch (a cross-
+    // axis size) -- on mobile #map-column's height instead comes from
+    // its own flex-grow (a main-axis size in that column context), which
+    // the flex spec does NOT carry through as definite to descendants.
+    // height: 100% silently failed there, collapsing this to its own
+    // near-zero content height. flex-grow sidesteps percentage
+    // resolution entirely and works in both the row (desktop) and
+    // column (mobile) cases.
+    flex: 1 1 auto;
+    min-height: 0;
     width: 100%;
     box-sizing: border-box;
     padding: var(--map-edge-gap);
     position: relative;
 
     display: flex;
-    align-items: center;
+    // LocationSelector's own root (.map-container, lowercase -- a
+    // different element than this #map-container wrapper) has an
+    // explicit height: 100% that needs this to be align-items: stretch
+    // (not center) to resolve at all -- same reasoning as #map-column
+    // above, one level deeper.
+    align-items: stretch;
     justify-content: center;
 
 
