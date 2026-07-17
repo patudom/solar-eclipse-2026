@@ -5421,8 +5421,11 @@ body {
 
 .overlay-close-icon {
   z-index: 15;
-  left: 50%;
-  transform: translateX(-50%);
+  // #overlay-close (the icon's own parent) already centers itself with
+  // left: 50%; transform: translateX(-50%) -- transform applies to
+  // static-positioned elements too (unlike left/top), so this same rule
+  // repeated here doubled up, shifting the icon a further 12px left of
+  // where the already-centered parent box put it.
   font-size: calc(2.5*var(--default-font-size));
 }
 
