@@ -193,18 +193,6 @@
                 :box-shadow="false"
                 @activate="() => { learnerPath = 'Clouds'}"
               ></icon-button>
-              
-              <icon-button
-                v-model="showInfoSheet"
-                fa-icon="circle-info"
-                fa-size="xl"
-                :color="accentColor"
-                :focus-color="accentColor"
-                :tooltip-text="showInfoSheet ? null : 'Information & User Guide'"
-                :tooltip-location="'bottom'"
-                :show-tooltip="!mobile"
-                :box-shadow="false"
-              ></icon-button>
             </div>
           <!-- </v-col> -->
         </div>
@@ -1018,13 +1006,13 @@
         <div class="inst-quad top-left">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
-            Set location<br> + more
+            Location, Path, <br>&amp; Timing
           </div>
         </div>
         <div class="inst-quad top-right">
           <div class="inst-arrow"><v-icon  class="the-arrow" :color="accentColor" :size="Math.min($vuetify.display.width*0.16,$vuetify.display.height*0.16)">mdi-arrow-up-bold</v-icon></div>
           <div class="inst-text">
-            Where, when, <br>+ how much
+            Settings, Info, <br>&amp; Sharing
           </div>
         </div>
         <div class="inst-quad bottom-left">
@@ -5937,8 +5925,7 @@ body {
     
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    justify-content: safe center;
+    justify-content: flex-start;
     align-items: stretch;
     gap: 0.5em;
     .thin-scrollbar();
@@ -5973,6 +5960,12 @@ body {
     #hide-guided-content-button {
       flex: 0 0 auto;
       border: none;
+      // The global .icon-wrapper rule hardcodes a dark translucent
+      // background regardless of the icon-button's own background-color
+      // prop (that prop only sets an inline --background-color CSS var,
+      // which .icon-wrapper's background never reads) -- override it
+      // directly here so this specific chevron stays transparent.
+      background: transparent;
     }
   }
   
@@ -5986,7 +5979,11 @@ body {
     
     // .v-row.non-map-row#instructions-row
   #instructions-row {
-    flex: 0 1 auto;
+    // Grows to fill the space between the title row (pinned top) and the
+    // button row (pinned bottom) when non-map-container is taller than its
+    // content -- blank space inside the box is fine, the text itself stays
+    // top-aligned via #top-container-main-text's own layout below.
+    flex: 1 1 auto;
     min-height: 0;
     display: flex;
     border: 1.5px solid var(--sky-color);
