@@ -6311,15 +6311,13 @@ body {
       border-radius: var(--tight-border-radius);
       padding: 0.35em 0.5em;
       font-size: calc(0.8 * var(--default-font-size));
-      // Same fixed width as #location-status-box (the WWT-canvas
-      // version of this box), so it doesn't grow/shrink with the
+      text-align: center;
+      // Narrower than #location-status-box (the WWT-canvas version of
+      // this box) -- this one sits over the small map, where space is
+      // tighter -- but still fixed, so it doesn't grow/shrink with the
       // length of the location name.
-      width: 10rem;
+      width: 8rem;
       max-width: 70vw;
-
-      @media (max-width: 600px) {
-        width: 9rem;
-      }
 
       .location-status-name {
         font-size: calc(0.9 * var(--default-font-size));
@@ -6330,7 +6328,6 @@ body {
       }
 
       .eclipse-status-line {
-        text-align: center;
         // Lets the "\n" before "(Xm Ys of totality)" in the computed
         // text actually render as a line break, same as the top-left
         // cluster's own copy of this text.
