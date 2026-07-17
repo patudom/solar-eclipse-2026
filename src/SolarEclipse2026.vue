@@ -733,14 +733,13 @@
         <div id="location-date-display">
           <div
             id="location-status-box"
+            :class="{ 'non-interactive': !narrow }"
             @click="() => {
-              if (narrow) {
-                showGuidedContent = true;
-                onResize();
+              if (!narrow) {
                 return;
               }
-              searchOpen = true;
-              learnerPath = 'Location'
+              showGuidedContent = true;
+              onResize();
               }"
           >
             <div class="location-status-name"><strong>{{ selectedLocationText }}</strong></div>
@@ -5069,6 +5068,13 @@ body {
   #location-status-box {
     pointer-events: auto;
 
+    // Clickable on mobile (opens the map), not on desktop -- the hover
+    // border-color change below implied clickability there even though
+    // nothing happened, so it's suppressed along with the click handler.
+    &.non-interactive {
+      pointer-events: none;
+    }
+
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
     color: white;
@@ -5088,7 +5094,7 @@ body {
       width: 9rem;
     }
 
-    &:hover {
+    &:not(.non-interactive):hover {
       border-color: color-mix(in srgb, var(--accent-color) 70%, black);
     }
 
