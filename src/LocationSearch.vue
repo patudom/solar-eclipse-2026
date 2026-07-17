@@ -390,57 +390,69 @@ export default defineComponent({
   .geocoding-search-icon:hover, #geocoding-close-icon:hover {
     cursor: pointer;
   }
+}
 
-  // For some reason setting width: 100% makes the search results 2px too small
-  // It's probably some Vuetify styling thing
-  // Maybe there's a better workaround, but this gets the job done for now
-  .forward-geocoding-results {
-    position: absolute;
-    top: 42px;
-    left: -1px;
-    width: calc(100% + 2px);
-    background: var(--bg-color);
-    backdrop-filter: blur(6px);
-    border: 2px solid var(--accent-color);
-    border-top: 0px;
-    // Results only ever show while searchOpen (the container itself is
-    // using --tight-border-radius then), so match that instead of a
-    // separately hardcoded value.
-    border-bottom-left-radius: var(--tight-border-radius, 5px);
-    border-bottom-right-radius: var(--tight-border-radius, 5px);
-    padding: 0px 10px;
-    
+// Deliberately NOT nested inside .forward-geocoding-container -- when
+// escapeContainer is set, this element is teleported to <body>, and a
+// nested selector here would compile to a descendant combinator
+// (.forward-geocoding-container .forward-geocoding-results) that stops
+// matching once the element is no longer actually inside that container
+// in the DOM (silently dropping the background/border/etc., since none
+// of it is set via inheritable properties). A top-level selector, plus
+// the CSS vars it depends on set directly via inline style when
+// escaped (see the :style binding in the template), works regardless
+// of where in the DOM this ends up.
+//
+// For some reason setting width: 100% makes the search results 2px too small
+// It's probably some Vuetify styling thing
+// Maybe there's a better workaround, but this gets the job done for now
+.forward-geocoding-results {
+  position: absolute;
+  top: 42px;
+  left: -1px;
+  width: calc(100% + 2px);
+  background: var(--bg-color);
+  backdrop-filter: blur(6px);
+  border: 2px solid var(--accent-color);
+  border-top: 0px;
+  // Results only ever show while searchOpen (the container itself is
+  // using --tight-border-radius then), so match that instead of a
+  // separately hardcoded value.
+  border-bottom-left-radius: var(--tight-border-radius, 5px);
+  border-bottom-right-radius: var(--tight-border-radius, 5px);
+  padding: 0px 10px;
+  color: var(--accent-color);
+
+  &.results-small {
+    top: 37px;
+    width: calc(100% + 4px);
+    left: -2px;
+  }
+
+  // Opens above the input instead of below -- for a search box sitting
+  // near the bottom of its own container/screen.
+  &.results-up {
+    top: auto;
+    bottom: 42px;
+    border-top: 2px solid var(--accent-color);
+    border-bottom: 0px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: var(--tight-border-radius, 5px);
+    border-top-right-radius: var(--tight-border-radius, 5px);
+
     &.results-small {
-      top: 37px;
-      width: calc(100% + 4px);
-      left: -2px;
+      bottom: 37px;
     }
+  }
 
-    // Opens above the input instead of below -- for a search box sitting
-    // near the bottom of its own container/screen.
-    &.results-up {
-      top: auto;
-      bottom: 42px;
-      border-top: 2px solid var(--accent-color);
-      border-bottom: 0px;
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-      border-top-left-radius: var(--tight-border-radius, 5px);
-      border-top-right-radius: var(--tight-border-radius, 5px);
+  .forward-geocoding-result {
+    border-top: 1px solid var(--accent-color);
+    font-size: 12pt;
+    pointer-events: auto;
 
-      &.results-small {
-        bottom: 37px;
-      }
-    }
-
-    .forward-geocoding-result {
-      border-top: 1px solid var(--accent-color);
-      font-size: 12pt;
-      pointer-events: auto;
-
-      &:hover {
-        cursor: pointer;
-      }
+    &:hover {
+      cursor: pointer;
     }
   }
 }

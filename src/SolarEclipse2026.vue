@@ -6210,20 +6210,14 @@ body {
     justify-content: center;
 
 
-    // Small, consistent margin from the small map's own edges for the
+    // Small, consistent margin from the small map's own edges for all
     // overlay buttons below.
     --map-overlay-margin: 0.5em;
-    // Leaflet's own always-visible "Credit: © Leaflet.js" label sits
-    // flush in the map's bottom-right corner (see LocationSelector.vue's
-    // .leaflet-bottom.leaflet-right::before) -- bottom-anchored buttons
-    // need more clearance than the horizontal/top margin to avoid
-    // sitting on top of it.
-    --map-overlay-bottom-margin: 1.75em;
 
     .map-search-bottomleft {
       position: absolute;
       z-index: 600;
-      bottom: var(--map-overlay-bottom-margin);
+      bottom: var(--map-overlay-margin);
       left: var(--map-overlay-margin);
     }
 
@@ -6231,7 +6225,7 @@ body {
     #my-location-overmap-button {
       position: absolute;
       z-index: 600;
-      bottom: var(--map-overlay-bottom-margin);
+      bottom: var(--map-overlay-margin);
       right: var(--map-overlay-margin);
     }
 
