@@ -2290,6 +2290,14 @@ export default defineComponent({
 
     document.addEventListener('keydown', this.onSpeedControlTabKeydown);
 
+    // Tracks keyboard vs mouse/touch use so the oreo focus ring can stay
+    // keyboard-only even on text inputs (see the body.keyboard-focus-only
+    // CSS override above -- browsers show :focus-visible for text fields
+    // on click by default, which this needs to suppress explicitly).
+    document.addEventListener('keydown', this.onKeydownForFocusIndicator);
+    document.addEventListener('mousedown', this.onPointerForFocusIndicator);
+    document.addEventListener('touchstart', this.onPointerForFocusIndicator);
+
     this.applyLayoutDefaults(this.narrow);
 
     this.updateSkyOpacityForSunAlt(10 * D2R); // 10 degrees above horizon
@@ -3246,6 +3254,19 @@ export default defineComponent({
       const delta = event.shiftKey ? -1 : 1;
       const nextIndex = (currentIndex + delta + stops.length) % stops.length;
       stops[nextIndex].focus();
+    },
+
+    // Only Tab (not every keydown) counts as "using the keyboard to move
+    // focus" -- typing letters into an already-focused field shouldn't
+    // retroactively make that focus "keyboard-visible".
+    onKeydownForFocusIndicator(event: KeyboardEvent) {
+      if (event.key === 'Tab') {
+        document.body.classList.add('keyboard-focus-only');
+      }
+    },
+
+    onPointerForFocusIndicator() {
+      document.body.classList.remove('keyboard-focus-only');
     },
 
     updateWWTLocation() {
@@ -4711,6 +4732,20 @@ export default defineComponent({
   border-radius: .125rem;
 }
 
+// :focus-visible's own browser heuristic carves out an exception for
+// text inputs/textareas: unlike buttons, they're treated as
+// "focus-visible" even when focused via a plain mouse click or tap (the
+// reasoning being that you need to see your cursor to type) -- so the
+// oreo ring above still shows up there on click, unlike everywhere else.
+// #keyboard-focus-only (toggled in mounted()/methods below, tracking
+// Tab presses vs mouse/touch) overrides that carve-out so text fields
+// behave the same as every other oreo-styled element: keyboard only.
+body:not(.keyboard-focus-only) input:focus-visible,
+body:not(.keyboard-focus-only) textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 // @cosmicds/vue-toolkit's icon-button bakes in its own pre-oreo focus
 // styling: plain (not focus-visible) rules that swap color/border-color
 // to --focus-color and, while active, the box-shadow to --focus-shadow --
@@ -5045,7 +5080,7 @@ body {
     // Fixed width so the box doesn't grow/shrink with the length of the
     // location name — long names wrap instead (max-width guards against
     // overflow on very narrow screens).
-    width: 12rem;
+    width: 10rem;
     max-width: 70vw;
     transition: border-color 0.2s ease;
 
@@ -5537,8 +5572,18 @@ body {
     align-self: center;
     padding: unset;
     margin: unset;
+
+    // Vuetify's own default dialog sizing (width AND max-width both
+    // calc(100% - 48px), a fixed 24px margin per side -- overriding
+    // only width leaves max-width still clamping it right back down)
+    // leaves too little room on very narrow screens for the two tab
+    // labels + close button below to fit without overlapping.
+    @media (max-width: 400px) {
+      width: calc(100% - 16px) !important;
+      max-width: calc(100% - 16px) !important;
+    }
   }
-  
+
   .bottom-sheet-card {
     height: fit-content;
     width: 100%;
@@ -5546,7 +5591,7 @@ body {
     align-self: center;
     border-bottom: solid #212121 0.5em;
   }
-  
+
   #tabs {
     // The tab bar sat flush against the card's own top-left corner, which
     // clips overflow -- leaving the oreo focus ring no room to render.
@@ -5567,6 +5612,22 @@ body {
     .v-slide-group__container {
       overflow: visible !important;
       contain: none !important;
+    }
+
+    // Each v-tab otherwise renders at Vuetify's own default min-width
+    // regardless of how narrow #tabs itself is, which is what actually
+    // overflowed past the card and under the close button -- shrink the
+    // padding/font and let them size to content instead.
+    .info-tabs {
+      min-width: 0;
+      padding-inline: 0.5em;
+      flex: 0 1 auto;
+
+      h3 {
+        margin: 0;
+        font-size: calc(1.05 * var(--default-font-size));
+        white-space: nowrap;
+      }
     }
   }
 
