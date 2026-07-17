@@ -719,7 +719,7 @@
     <div
       id="eclipse-percent-indicator"
       v-if="currentFractionEclipsed > 0"
-      :style="{ top: eclipsedIndicatorTop + 'px' }"
+      :style="{ top: eclipsedIndicatorTop + 'px', left: eclipsedIndicatorLeft + 'px' }"
     >
       {{ percentEclipsedText }}
     </div>
@@ -2070,9 +2070,10 @@ export default defineComponent({
       normalBorderRadius: "10px",
       tightBorderRadius: "5px",
       guidedContentHeight: "300px",
-      // Vertical position (px, relative to #main-content's own top edge)
-      // for the eclipse-percent indicator -- see updateEclipsedIndicatorPosition().
+      // Position (px, relative to #main-content's own top/left edges) for
+      // the eclipse-percent indicator -- see updateEclipsedIndicatorPosition().
       eclipsedIndicatorTop: 0,
+      eclipsedIndicatorLeft: 0,
       showGuidedContent: true,
       topContainerCustomHeight: null as number | null,
       isResizingTopContainer: false,
@@ -3706,11 +3707,19 @@ export default defineComponent({
       this.updateGuidedContentHeight();
     },
 
-    // Positions the eclipse-percent indicator halfway between the top of
-    // the time controls (the toolbar's own top edge, with the
-    // speed-control popup closed) and the vertical middle of the WWT
-    // canvas (#main-content). Deliberately not dynamic with the popup's
-    // open/closed state -- always uses the closed-state reference point.
+    // Positions the eclipse-percent indicator relative to the top of the
+    // time controls (the toolbar's own top edge, with the speed-control
+    // popup closed -- deliberately not dynamic with the popup's
+    // open/closed state) and the WWT canvas (#main-content).
+    //
+    // On a wide (landscape) screen: vertically centered on the canvas,
+    // with its horizontal center 25% of the screen's width in from the
+    // right edge.
+    //
+    // On a vertical (portrait) screen: horizontally centered, 40% of the
+    // way from the toolbar's top edge towards the canvas's vertical
+    // middle (i.e. closer to the toolbar than the exact midpoint --
+    // measuring the 40% from the toolbar side, not the canvas side).
     updateEclipsedIndicatorPosition() {
       const mainContent = document.getElementById('main-content');
       const timeControlsEl = document.getElementById('tools');
@@ -3720,8 +3729,15 @@ export default defineComponent({
       const mainRect = mainContent.getBoundingClientRect();
       const controlsTop = timeControlsEl.getBoundingClientRect().top;
       const canvasMiddle = mainRect.top + mainRect.height / 2;
-      const midpoint = (controlsTop + canvasMiddle) / 2;
-      this.eclipsedIndicatorTop = midpoint - mainRect.top;
+      const isWideScreen = window.innerWidth > window.innerHeight;
+
+      if (isWideScreen) {
+        this.eclipsedIndicatorTop = canvasMiddle - mainRect.top;
+        this.eclipsedIndicatorLeft = mainRect.width * 0.75;
+      } else {
+        this.eclipsedIndicatorTop = controlsTop - 0.4 * (controlsTop - canvasMiddle) - mainRect.top;
+        this.eclipsedIndicatorLeft = mainRect.width / 2;
+      }
     },
 
     startTopContainerResize(event: MouseEvent | TouchEvent) {
@@ -6493,15 +6509,14 @@ body {
     width: 100%;
 }
 
-// Styled to match #speed-text. top is set inline (see
-// updateEclipsedIndicatorPosition) -- vertically halfway between the top
-// of the time controls (popup closed) and the middle of the WWT canvas
-// (#main-content, its positioning parent here). Centered horizontally
-// on that same canvas.
+// Styled to match #speed-text. top/left are set inline (see
+// updateEclipsedIndicatorPosition) relative to the WWT canvas
+// (#main-content, its positioning parent here) -- the exact placement
+// differs between wide and vertical screens. transform centers the
+// element itself on that computed point in both dimensions.
 #eclipse-percent-indicator {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
   background-color: rgba(0, 0, 0, 0.5);
   padding-inline: 0.4em;
   padding-block: 0.15em;
