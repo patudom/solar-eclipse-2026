@@ -78,7 +78,9 @@
         v-for="(feature, index) in (searchResults !== null ?  searchResults.features : [])"
         class="forward-geocoding-result"
         :key="index"
+        tabindex="0"
         @click="() => setLocationFromSearchFeature(feature)"
+        @keyup.enter="() => setLocationFromSearchFeature(feature)"
       >
         {{ feature.place_name }}
       </div>
