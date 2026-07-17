@@ -1151,6 +1151,7 @@
       <div id="location-date-display">
         <div
           id="location-status-box"
+          :class="{ 'non-interactive': narrow }"
           @click="() => {
             if (narrow) {
               return;
@@ -6569,6 +6570,16 @@ body {
   // unbolded details underneath.
   #location-status-box {
     pointer-events: auto;
+
+    // Belt-and-suspenders alongside the @click guard: this makes the box
+    // truly inert to clicks/taps at the browser level in narrow/mobile
+    // layouts, rather than relying on the handler firing and returning
+    // early -- also drops the hover border-color change below, so there's
+    // no lingering visual hint that it's interactive.
+    &.non-interactive {
+      pointer-events: none;
+    }
+
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(6px);
     color: white;
