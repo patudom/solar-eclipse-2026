@@ -26,6 +26,7 @@
       ></v-text-field>
       <div
         class="icon-wrapper geocoding-search-icon"
+        ref="searchIcon"
         tabindex="0"
         @click="activateSearchIcon"
         @keyup.enter="activateSearchIcon"
@@ -227,6 +228,14 @@ export default defineComponent({
       if (this.searchOpen) {
         if (this.stayOpen || (this.searchText && this.searchText.length > 0)) {
           this.performForwardGeocodingSearch();
+          // Keyboard-activating this icon (Enter, as opposed to a mouse
+          // click) drops focus to <body> immediately afterward for
+          // reasons that don't trace back to any handler in this file --
+          // re-assert focus so the results focus trap (which keys off
+          // document.activeElement) has something to find it by.
+          this.$nextTick(() => {
+            (this.$refs.searchIcon as HTMLElement | undefined)?.focus();
+          });
         } else {
           this.searchOpen = false;
           this.clearSearchData();
@@ -289,17 +298,22 @@ export default defineComponent({
       };
     },
 
-    // While results are showing, Tab should cycle between the input box
-    // and each result -- not escape to the rest of the page. The results
-    // themselves are queried by class rather than scoped under this
-    // component's own root, since escapeContainer teleports them to
-    // <body> (there's only ever one location-search instance active at
-    // a time in this app).
+    // While results are showing, Tab should cycle between the input box,
+    // the search (magnifying-glass) icon, and each result -- not escape
+    // to the rest of the page. Without the icon in this list, a user who
+    // tabs to and activates it (rather than pressing Enter in the input)
+    // would Tab away to wherever it sits in the page's normal DOM tab
+    // order on their very next Tab press, instead of into the results.
+    // The results themselves are queried by class rather than scoped
+    // under this component's own root, since escapeContainer teleports
+    // them to <body> (there's only ever one location-search instance
+    // active at a time in this app).
     locationSearchTabStops(): HTMLElement[] {
       const container = this.$refs.container as HTMLElement | undefined;
       const input = container?.querySelector('.forward-geocoding-input input') as HTMLElement | null ?? null;
+      const icon = container?.querySelector('.geocoding-search-icon') as HTMLElement | null ?? null;
       const results = Array.from(document.querySelectorAll('.forward-geocoding-result')) as HTMLElement[];
-      return [input, ...results].filter((el): el is HTMLElement => el !== null);
+      return [input, icon, ...results].filter((el): el is HTMLElement => el !== null);
     },
 
     onLocationSearchTabKeydown(event: KeyboardEvent) {
