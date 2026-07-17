@@ -8,7 +8,7 @@
   <!-- Floating button to reopen the top content box once it's hidden.
        Stays in the DOM (v-show, not v-if) even while the box is open so
        the ref used below to reset its tooltip/focus keeps working. -->
-  <div id="closed-top-container" v-show="!showGuidedContent" class="budge">
+  <div id="closed-top-container" v-show="!narrow && !showGuidedContent" class="budge">
     <icon-button
       v-model="showGuidedContent"
       id="show-guided-content"
